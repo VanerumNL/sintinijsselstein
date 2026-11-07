@@ -5,9 +5,29 @@
   const link = u => /^(https?:\/\/|\/)/i.test(String(u || "").trim()) ? esc(String(u).trim()) : (u ? esc("https://" + String(u).trim()) : "");
   const beeld = u => /^(https?:\/\/|\/)/i.test(String(u || "").trim()) ? esc(String(u).trim()) : "";
   const fbIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.5 1.6-1.5h1.7V4.4c-.3 0-1.3-.1-2.5-.1-2.5 0-4.1 1.5-4.1 4.2v2.3H7.4V14h2.8v8h3.3z"/></svg>';
-  const BLOKKEN = ["hero", "aftelklok", "programma", "fotos", "facebookBlok", "sponsors"];
+  const BLOKKEN = ["nieuwsbalk", "hero", "aftelklok", "programma", "fotos", "facebookBlok", "sponsors"];
+
+  const MAST = `<svg class="mast" viewBox="0 0 120 420" aria-hidden="true">
+    <path class="golf" d="M38 20 A26 26 0 0 0 38 64"/><path class="golf g2" d="M26 8 A42 42 0 0 0 26 76"/><path class="golf g3" d="M14 -4 A58 58 0 0 0 14 88"/>
+    <path class="golf" d="M82 20 A26 26 0 0 1 82 64"/><path class="golf g2" d="M94 8 A42 42 0 0 1 94 76"/><path class="golf g3" d="M106 -4 A58 58 0 0 1 106 88"/>
+    <line x1="60" y1="10" x2="60" y2="42" stroke="#fbf7f0" stroke-width="3"/>
+    <circle cx="60" cy="42" r="5" fill="#ffde59"/>
+    ${Array.from({ length: 9 }, (_, i) => `<rect x="${55 - i * 0.6}" y="${46 + i * 40}" width="${10 + i * 1.2}" height="40" fill="${i % 2 ? "#fbf7f0" : "#bc1a14"}"/>`).join("")}
+    <rect x="44" y="160" width="32" height="10" rx="2" fill="#fbf7f0"/><rect x="40" y="250" width="40" height="10" rx="2" fill="#fbf7f0"/>
+  </svg>`;
 
   const blok = {
+    nieuwsbalk: B => {
+      const items = (B.items || []).map(x => typeof x === "string" ? x : x.tekst).filter(Boolean);
+      if (!items.length) return "";
+      const band = items.map(t => `<span>${esc(t)}</span>`).join("");
+      const duur = Math.max(18, items.join(" ").length * 0.22);
+      return `<div class="nieuwsbalk" role="region" aria-label="${esc(B.label || "Laatste nieuws")}">
+  <span class="nb-label"><i></i>${esc(B.label || "Laatste nieuws")}</span>
+  <div class="nb-loop"><div class="nb-band" style="--duur:${duur}s">${band}<div aria-hidden="true" style="display:contents">${band}</div></div></div>
+</div>`;
+    },
+
     hero: (B, C) => `
 <header class="hero" style="${B.foto ? `background-image:linear-gradient(180deg,rgba(20,33,63,.55) 0%,rgba(20,33,63,.45) 45%,rgba(20,33,63,.92) 100%),url('${beeld(B.foto)}')` : ""}">
   <div class="wrap">
@@ -16,11 +36,13 @@
       ${C.facebook ? `<a class="fb-knop" href="${link(C.facebook)}" target="_blank" rel="noopener">${fbIcon} Facebook</a>` : ""}
     </div>
     <div class="hero-kern">
+      ${B.kicker ? `<span class="uitzending"><i></i>${esc(B.kicker)}</span>` : ""}
       <h1>${esc(B.titel)}${B.titel2 ? `<span>${esc(B.titel2)}</span>` : ""}</h1>
       ${B.tekst ? `<p class="sub">${esc(B.tekst)}</p>` : ""}
-      ${B.datumGroot ? `<div class="datum-chip">${esc(B.datumTekst)} <b>${esc(B.datumGroot)}</b></div>` : ""}
+      ${B.datumGroot ? `<div class="onderbalk">${B.datumTekst ? `<span class="ob-label">${esc(B.datumTekst)}</span>` : ""}<span class="ob-tekst">${esc(B.datumGroot)}</span></div>` : ""}
     </div>
   </div>
+  ${B.toren === false ? "" : MAST + `<span class="mast-tekst">Uitgezonden vanaf de Gerbrandytoren</span>`}
   <svg class="boot" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
     <path d="M0 70 Q150 40 300 70 T600 70 T900 70 T1200 70 V120 H0Z" fill="#1d2d55"/>
     <path d="M0 90 Q150 64 300 90 T600 90 T900 90 T1200 90 V120 H0Z" fill="#253a6e" opacity=".6"/>
@@ -30,6 +52,7 @@
     aftelklok: B => `
 <section class="klok" aria-label="Aftelklok">
   <div class="wrap" id="klok">
+    <span class="rubriek">Aftellen</span>
     <span class="label">${esc(B.tekst)}</span>
     <div class="letters">
       ${["dagen", "uren", "minuten", "seconden"].map(e => `<div class="letter"><div class="n" data-k="${e}">0</div><div class="e">${e}</div></div>`).join("")}
@@ -41,7 +64,7 @@
 <section class="programma">
   <div class="wrap prog-grid">
     <div class="prog-intro">
-      ${C.hero?.datumGroot ? `<span class="label">${esc(C.hero.datumGroot)}</span>` : ""}
+      <span class="rubriek">Programma</span>
       <h2>${esc(B.titel)}</h2>
       ${B.tekst ? `<p>${esc(B.tekst)}</p>` : ""}
     </div>
@@ -54,7 +77,7 @@
     fotos: B => `
 <section class="fotos">
   <div class="wrap">
-    <div class="kop"><div><span class="label">Terugblik</span><h2>${esc(B.titel)}</h2></div></div>
+    <div class="kop"><div><span class="rubriek">Terugblik</span><h2>${esc(B.titel)}</h2></div></div>
     <div class="foto-grid">
       ${(B.lijst || []).map(f => beeld(f.bestand)
         ? `<figure class="foto"><img src="${beeld(f.bestand)}" alt="${esc(f.onderschrift)}" loading="lazy">${f.onderschrift ? `<figcaption>${esc(f.onderschrift)}</figcaption>` : ""}</figure>`
@@ -66,7 +89,7 @@
     facebookBlok: (B, C) => `
 <section class="facebook">
   <div class="wrap fb-blok">
-    <div><h2>${esc(B.titel)}</h2>${B.tekst ? `<p>${esc(B.tekst)}</p>` : ""}</div>
+    <div><span class="rubriek" style="background:var(--goud);color:var(--nacht)">Volg ons</span><h2>${esc(B.titel)}</h2>${B.tekst ? `<p>${esc(B.tekst)}</p>` : ""}</div>
     ${C.facebook ? `<a class="fb-knop" href="${link(C.facebook)}" target="_blank" rel="noopener">${fbIcon} Naar onze Facebookpagina</a>` : ""}
   </div>
 </section>`,
@@ -127,9 +150,9 @@
   function render(C) {
     if (!C || typeof C !== "object") return;
     const volgorde = (C.volgorde || BLOKKEN).filter(k => blok[k]);
-    BLOKKEN.forEach(k => { if (!volgorde.includes(k)) volgorde.push(k); });
+    BLOKKEN.forEach((k, i) => { if (!volgorde.includes(k)) volgorde.splice(Math.min(i, volgorde.length), 0, k); });
     let html = volgorde.filter(k => C[k] && C[k].toon).map(k => blok[k](C[k], C)).join("");
-    html += `<footer><div class="wrap"><span>© ${new Date().getFullYear()} ${esc(C.footer)}</span>${C.facebook ? `<a href="${link(C.facebook)}" target="_blank" rel="noopener">Facebook</a>` : ""}</div></footer>`;
+    html += `<footer><div class="wrap"><span>© ${new Date().getFullYear()} ${esc(C.footer)} <span class="uitgezonden">· Uitgezonden vanuit IJsselstein</span></span>${C.facebook ? `<a href="${link(C.facebook)}" target="_blank" rel="noopener">Facebook</a>` : ""}</div></footer>`;
     document.getElementById("site").innerHTML = html;
     pepernoten();
     if (C.aftelklok?.toon) aftelklok(C.aftelklok); else clearInterval(timer);

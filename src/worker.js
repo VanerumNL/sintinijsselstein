@@ -40,10 +40,20 @@ async function magBewerken(req, env) {
 }
 
 async function leesInhoud(env, req) {
-  const opgeslagen = await env.KV.get("inhoud", "json");
-  if (opgeslagen) return opgeslagen;
-  const r = await env.ASSETS.fetch(new URL("/standaard.json", req.url));
-  return r.json();
+  const [opgeslagen, standaard] = await Promise.all([
+    env.KV.get("inhoud", "json"),
+    env.ASSETS.fetch(new URL("/standaard.json", req.url)).then(r => r.json())
+  ]);
+  if (!opgeslagen) return standaard;
+  /* Nieuwe blokken en velden uit een update aanvullen, zonder iets van de opgeslagen inhoud te overschrijven. */
+  for (const [k, v] of Object.entries(standaard)) {
+    if (!(k in opgeslagen)) opgeslagen[k] = v;
+    else if (v && typeof v === "object" && !Array.isArray(v) && opgeslagen[k] && typeof opgeslagen[k] === "object")
+      for (const [k2, v2] of Object.entries(v)) if (!(k2 in opgeslagen[k])) opgeslagen[k][k2] = v2;
+  }
+  if (Array.isArray(opgeslagen.volgorde))
+    standaard.volgorde.forEach((k, i) => { if (!opgeslagen.volgorde.includes(k)) opgeslagen.volgorde.splice(Math.min(i, opgeslagen.volgorde.length), 0, k); });
+  return opgeslagen;
 }
 
 /* De homepagina krijgt de inhoud direct mee, zodat er niets verspringt bij het laden. */

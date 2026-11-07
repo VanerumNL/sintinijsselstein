@@ -102,3 +102,47 @@ a.logo:hover{transform:translateY(-3px)}
 
 footer{background:var(--nacht);color:var(--zacht);font-size:.9rem;padding-block:28px}
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* ===== Sint-nieuws: uitzending vanuit IJsselstein ===== */
+:root{--f-nieuws:"Archivo Narrow","Arial Narrow","Roboto Condensed",sans-serif;--perkament:#f8f0dc}
+
+/* nieuwsbalk */
+.nieuwsbalk{display:flex;align-items:stretch;background:var(--mijter);color:#fff;font-family:var(--f-nieuws);font-weight:700;font-size:1rem;overflow:hidden;position:relative;z-index:3}
+.nb-label{flex:none;display:flex;align-items:center;gap:8px;background:var(--goud);color:var(--nacht);text-transform:uppercase;letter-spacing:.08em;padding:9px 14px 9px max(14px,env(safe-area-inset-left,0px));clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%);padding-right:24px}
+.nb-label i{width:9px;height:9px;border-radius:50%;background:var(--mijter);animation:knipper 1.4s ease-in-out infinite}
+.nb-loop{flex:1;min-width:0;overflow:hidden;display:flex;align-items:center}
+.nb-band{display:flex;white-space:nowrap;animation:loop var(--duur,40s) linear infinite;padding-left:12px}
+.nb-band span{padding-right:28px}
+.nb-band span::after{content:"★";color:var(--goud);padding-left:28px}
+@keyframes loop{to{transform:translateX(-50%)}}
+@keyframes knipper{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.nb-band{animation:none;white-space:normal;flex-wrap:wrap}.nb-band [aria-hidden]{display:none}.nb-label i,.golf{animation:none}}
+
+/* uitzend-label en ondertitelbalk */
+.uitzending{justify-self:start;display:inline-flex;align-items:center;gap:8px;font-family:var(--f-nieuws);font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;background:rgba(10,16,34,.72);border:1px solid rgba(255,222,89,.55);color:var(--goud);padding:6px 12px;border-radius:4px}
+.uitzending i{width:8px;height:8px;border-radius:50%;background:#ff3b30;animation:knipper 1.4s ease-in-out infinite}
+.onderbalk{justify-self:start;display:flex;flex-wrap:wrap;max-width:100%;box-shadow:0 10px 24px rgba(0,0,0,.35);transform:skewX(-6deg)}
+.onderbalk>span{transform:skewX(6deg)}
+.ob-label{background:var(--mijter);color:#fff;font-family:var(--f-nieuws);font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:10px 16px;display:flex;align-items:center}
+.ob-tekst{background:var(--sneeuw);color:var(--nacht);font-family:var(--f-display);font-size:clamp(1.15rem,3.6vw,1.6rem);padding:8px 18px;border-bottom:4px solid var(--goud)}
+
+/* Gerbrandytoren */
+.mast{position:absolute;right:max(2vw,8px);bottom:28px;height:min(78%,420px);width:auto;z-index:1;pointer-events:none;filter:drop-shadow(0 6px 14px rgba(0,0,0,.35))}
+.golf{fill:none;stroke:var(--goud);stroke-width:3;stroke-linecap:round;opacity:0;animation:zend 2.4s ease-out infinite}
+.golf.g2{animation-delay:.4s}.golf.g3{animation-delay:.8s}
+@keyframes zend{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+.mast-tekst{position:absolute;right:max(2vw,8px);bottom:6px;z-index:2;font-family:var(--f-nieuws);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--zacht)}
+@media (max-width:640px){.mast{height:30%;right:4px;bottom:34px;opacity:.6}.mast-tekst{display:none}}
+.hero-kern{padding-right:clamp(0px,14vw,200px)}
+@media (max-width:640px){.hero-kern{padding-right:0}}
+
+/* sectiekoppen als nieuwsrubriek */
+.rubriek{display:inline-block;font-family:var(--f-nieuws);font-weight:700;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;background:var(--mijter);color:#fff;padding:4px 10px;border-radius:3px;margin-bottom:12px}
+.klok .rubriek{background:var(--goud);color:var(--nacht);margin-bottom:0}
+.programma{background:var(--perkament)}
+
+/* aftelklok op mobiel */
+.letter .e{font-size:clamp(.56rem,2.5vw,.78rem);letter-spacing:.08em;overflow-wrap:anywhere}
+@media (max-width:480px){.letter{padding:20px 2px 12px}.letter .e{letter-spacing:.02em}}
+
+footer .uitgezonden{opacity:.75}

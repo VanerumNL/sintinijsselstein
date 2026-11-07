@@ -8,7 +8,7 @@
 <link rel="icon" href="/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Figtree:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Figtree:wght@400;600;800&family=Archivo+Narrow:wght@600;700&display=swap">
 <style>
 :root{
   --rood:#bc1a14; --geel:#ffde59; --paars:#663d8f; --nacht:#14213f;
@@ -131,11 +131,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 <script>
 /* ---------- Welke blokken en velden er zijn ---------- */
 const BLOKKEN = {
+  nieuwsbalk: { naam: "Nieuwsbalk", velden: [{ k: "label", label: "Label (geel vak)" }],
+    lijst: { k: "items", item: "bericht", titel: "Berichten die voorbij lopen", kopveld: "tekst", nieuw: { tekst: "" }, velden: [{ k: "tekst", label: "Bericht" }] } },
   hero: { naam: "Header", velden: [
     { k: "foto", t: "foto", label: "Achtergrondfoto" },
+    { k: "kicker", label: "Klein label boven de titel" },
     { k: "titel", label: "Titel" }, { k: "titel2", label: "Tweede regel (geel)" },
     { k: "tekst", t: "lang", label: "Tekst" },
-    { r: [{ k: "datumTekst", label: "Woord voor de datum" }, { k: "datumGroot", label: "Datum en tijd" }] }
+    { r: [{ k: "datumTekst", label: "Woord voor de datum" }, { k: "datumGroot", label: "Datum en tijd" }] },
+    { k: "toren", t: "vink", label: "Gerbrandytoren tonen" }
   ]},
   aftelklok: { naam: "Aftelklok", velden: [
     { r: [{ k: "datum", t: "datum", label: "Datum" }, { k: "tijd", t: "tijd", label: "Tijd" }] },
@@ -223,7 +227,7 @@ $("#inlogform").addEventListener("submit", async e => {
 async function openEditor() {
   data = await api("/api/inhoud");
   data.volgorde = (data.volgorde || Object.keys(BLOKKEN)).filter(k => BLOKKEN[k]);
-  Object.keys(BLOKKEN).forEach(k => { if (!data.volgorde.includes(k)) data.volgorde.push(k); data[k] ||= { toon: false }; });
+  Object.keys(BLOKKEN).forEach((k, i) => { if (!data.volgorde.includes(k)) data.volgorde.splice(Math.min(i, data.volgorde.length), 0, k); data[k] ||= { toon: false }; });
   opgeslagen = JSON.stringify(data);
   $("#inlog").hidden = true; $("#app").hidden = false;
   tekenFormulier(); stuurVoorbeeld();
@@ -242,6 +246,7 @@ function veldHtml(v, basis) {
         <label class="knop licht klein bestand">${waarde ? "Vervangen" : "Kies bestand"}<input type="file" accept="image/*" id="${id}" data-upload="${pad}" data-soort="${v.t}"></label>
         ${waarde ? `<button class="knop rood klein" type="button" data-wis="${pad}">Weghalen</button>` : ""}
       </div></div>`;
+  if (v.t === "vink") return `<label class="schakel" style="justify-self:start"><input type="checkbox" id="${id}" data-vink="${pad}" ${waarde !== false && waarde !== "" ? "checked" : ""}>${v.label}</label>`;
   const type = v.t === "datum" ? "date" : v.t === "tijd" ? "time" : "text";
   if (v.t === "lang") return `<div class="veld"><label for="${id}">${v.label}</label><textarea id="${id}" data-pad="${pad}">${esc(waarde)}</textarea></div>`;
   return `<div class="veld"><label for="${id}">${v.label}</label><input type="${type}" id="${id}" data-pad="${pad}" value="${esc(waarde)}"></div>`;
@@ -336,6 +341,7 @@ $("#formulier").addEventListener("click", async e => {
 });
 $("#formulier").addEventListener("change", async e => {
   const t = e.target;
+  if (t.dataset.vink) { zet(t.dataset.vink, t.checked); return; }
   if (t.dataset.toon) { data[t.dataset.toon].toon = t.checked; tekenFormulier(); gewijzigd(); return; }
   if (t.dataset.upload && t.files?.[0]) {
     const label = t.closest("label"); label.firstChild.textContent = "Bezig met uploaden…";
