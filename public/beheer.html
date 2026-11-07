@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Beheer · Sint in IJsselstein</title>
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Figtree:wght@400;600;800&display=swap">
+<style>
+:root{
+  --rood:#bc1a14; --geel:#ffde59; --paars:#663d8f; --nacht:#14213f;
+  --bg:#f4f2f7; --kaart:#fff; --tekst:#1c2238; --zacht:#5f6680; --lijn:#dedbe6; --veld:#fbfaf7;
+  --goed:#1f7a4d; --f-display:"Bagel Fat One","Arial Rounded MT Bold",sans-serif; --f-body:"Figtree","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tekst);font-family:var(--f-body);font-size:16px;line-height:1.45}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--paars);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* inloggen */
+.inlog{min-height:100vh;display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-left,0px))}
+.inlog form{background:var(--kaart);border-radius:18px;padding:28px;width:min(100%,380px);display:grid;gap:14px;box-shadow:0 10px 30px rgba(20,33,63,.12)}
+.inlog .logo{background:var(--geel);border-radius:12px;padding:10px;justify-self:start;line-height:0}
+.inlog .logo img{height:54px}
+.inlog h1{font-family:var(--f-display);font-weight:400;font-size:1.6rem;margin:0}
+.inlog p{margin:0;color:var(--zacht)}
+.melding{color:var(--rood);font-weight:600;min-height:1.2em;margin:0}
+
+/* bovenbalk */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--nacht);z-index:20}
+.balk{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--nacht);color:#fff}
+.balk-in{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.balk .naam{font-family:var(--f-display);font-size:1.15rem;color:var(--geel);margin-right:auto}
+.status{font-size:.9rem;color:#c9d2ea}
+.status.vuil{color:var(--geel);font-weight:700}
+.knop{border:0;border-radius:10px;padding:9px 16px;font-weight:800;cursor:pointer;background:#fff;color:var(--nacht);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.knop.hoofd{background:var(--geel)}
+.knop.hoofd:disabled{opacity:.55;cursor:default}
+.knop.licht{background:transparent;color:inherit;border:1.5px solid currentColor}
+.knop.klein{padding:6px 12px;font-size:.88rem}
+.knop.rood{background:transparent;color:var(--rood);border:1.5px solid #f0c9c6}
+
+.tabs{display:none}
+.werk{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:24px;padding:20px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px));align-items:start}
+.voorbeeld{position:sticky;top:76px;height:calc(100vh - 96px);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 6px 24px rgba(20,33,63,.12)}
+.voorbeeld iframe{width:100%;height:100%;border:0;display:block}
+@media (max-width:960px){
+  .werk{grid-template-columns:minmax(0,1fr)}
+  .tabs{display:flex;gap:6px;padding:10px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+  .tabs button{flex:1;border:0;border-radius:10px;padding:10px;font-weight:800;background:#e7e3ef;cursor:pointer}
+  .tabs button[aria-selected="true"]{background:var(--paars);color:#fff}
+  .werk[data-tab="bewerken"] .voorbeeld{display:none}
+  .werk[data-tab="voorbeeld"] .formulier{display:none}
+  .voorbeeld{position:static;height:75vh}
+}
+
+/* blokken */
+.formulier{display:grid;gap:14px;min-width:0}
+.blok{background:var(--kaart);border-radius:14px;box-shadow:0 2px 8px rgba(20,33,63,.06);overflow:hidden}
+.blok.uit{opacity:.72}
+.blok-kop{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.blok-kop .titel{flex:1;font-weight:800;font-size:1.05rem;background:none;border:0;text-align:left;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:8px}
+.blok-kop .titel::before{content:"";width:8px;height:8px;border-right:2.5px solid var(--zacht);border-bottom:2.5px solid var(--zacht);transform:rotate(-45deg);transition:transform .15s}
+.blok.open .blok-kop .titel::before{transform:rotate(45deg)}
+.icoon{width:34px;height:34px;border-radius:9px;border:1px solid var(--lijn);background:var(--veld);cursor:pointer;display:grid;place-items:center;font-weight:800;color:var(--zacht)}
+.icoon:disabled{opacity:.35;cursor:default}
+.schakel{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--zacht);cursor:pointer}
+.schakel input{appearance:none;width:40px;height:24px;border-radius:999px;background:#cfcbd8;position:relative;cursor:pointer;margin:0;transition:background .15s}
+.schakel input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s}
+.schakel input:checked{background:var(--goed)}
+.schakel input:checked::after{transform:translateX(16px)}
+.blok-body{padding:4px 14px 16px;display:grid;gap:14px;border-top:1px solid var(--lijn)}
+.blok:not(.open) .blok-body{display:none}
+.veld{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;min-width:0}
+.lijst,.item,.blok-body>*{min-width:0}
+.blok-body{grid-template-columns:minmax(0,1fr)}
+.veld label,.veld .lbl{font-size:.85rem;font-weight:700;color:var(--zacht)}
+.veld input[type=text],.veld input[type=date],.veld input[type=time],.veld input[type=url],.veld input[type=password],.veld textarea{width:100%;border:1.5px solid var(--lijn);border-radius:10px;padding:9px 11px;background:var(--veld);min-width:0}
+.veld textarea{min-height:76px;resize:vertical}
+.rij{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.beeld{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.beeld .duim{width:96px;height:64px;border-radius:8px;background:#ece9f2 center/cover no-repeat;border:1px solid var(--lijn);flex:none;display:grid;place-items:center;font-size:.75rem;color:var(--zacht)}
+.beeld .duim.logo{background-size:contain;background-color:#fff}
+.bestand{position:relative;overflow:hidden}
+.bestand input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.lijst{display:grid;gap:10px}
+.item{border:1.5px solid var(--lijn);border-radius:12px;padding:12px;display:grid;gap:10px;background:var(--veld)}
+.item-kop{display:flex;align-items:center;gap:8px}
+.item-kop strong{flex:1;font-size:.95rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.extra{display:flex;gap:10px;flex-wrap:wrap;padding-top:6px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--nacht);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;z-index:30;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.wwvak{display:grid;gap:10px;background:var(--kaart);border-radius:14px;padding:14px}
+</style>
+</head>
+<body>
+
+<div class="inlog" id="inlog">
+  <form id="inlogform">
+    <div class="logo"><img src="/logo.png" alt="Sint in IJsselstein"></div>
+    <h1 id="inlogtitel">Beheer</h1>
+    <p id="inloguitleg">Log in om de site aan te passen.</p>
+    <div class="veld"><label for="ww1">Wachtwoord</label><input type="password" id="ww1" autocomplete="current-password" required></div>
+    <div class="veld" id="ww2vak" hidden><label for="ww2">Herhaal wachtwoord</label><input type="password" id="ww2" autocomplete="new-password"></div>
+    <p class="melding" id="inlogmelding"></p>
+    <button class="knop hoofd" type="submit" id="inlogknop">Inloggen</button>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <div class="balk"><div class="balk-in">
+    <span class="naam">Sint in IJsselstein</span>
+    <span class="status" id="status">Alles opgeslagen</span>
+    <a class="knop licht klein" href="/" target="_blank" rel="noopener">Bekijk site</a>
+    <button class="knop hoofd" id="opslaan" disabled>Opslaan</button>
+  </div></div>
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="bewerken">Bewerken</button>
+    <button role="tab" aria-selected="false" data-tab="voorbeeld">Voorbeeld</button>
+  </div>
+  <div class="werk" data-tab="bewerken">
+    <div class="formulier" id="formulier"></div>
+    <div class="voorbeeld"><iframe id="voorbeeld" title="Voorbeeld van de site" src="/?voorbeeld=1"></iframe></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- Welke blokken en velden er zijn ---------- */
+const BLOKKEN = {
+  hero: { naam: "Header", velden: [
+    { k: "foto", t: "foto", label: "Achtergrondfoto" },
+    { k: "titel", label: "Titel" }, { k: "titel2", label: "Tweede regel (geel)" },
+    { k: "tekst", t: "lang", label: "Tekst" },
+    { r: [{ k: "datumTekst", label: "Woord voor de datum" }, { k: "datumGroot", label: "Datum en tijd" }] }
+  ]},
+  aftelklok: { naam: "Aftelklok", velden: [
+    { r: [{ k: "datum", t: "datum", label: "Datum" }, { k: "tijd", t: "tijd", label: "Tijd" }] },
+    { k: "tekst", label: "Tekst boven de klok" },
+    { k: "klaarTekst", label: "Tekst als de tijd om is" }
+  ]},
+  programma: { naam: "Programma", velden: [
+    { k: "titel", label: "Titel" }, { k: "tekst", t: "lang", label: "Tekst" }
+  ], lijst: { k: "onderdelen", item: "plek", titel: "Plekken en tijden", kopveld: "plek", nieuw: { plek: "", aankomst: "", vertrek: "", info: "" }, velden: [
+    { k: "plek", label: "Plek" },
+    { r: [{ k: "aankomst", t: "tijd", label: "Aankomst" }, { k: "vertrek", t: "tijd", label: "Vertrek (leeg = geen)" }] },
+    { k: "info", t: "lang", label: "Uitleg" }
+  ]}},
+  fotos: { naam: "Foto's", velden: [{ k: "titel", label: "Titel" }],
+    lijst: { k: "lijst", item: "foto", titel: "Foto's", kopveld: "onderschrift", nieuw: { bestand: "", onderschrift: "" }, velden: [
+      { k: "bestand", t: "foto", label: "Foto" }, { k: "onderschrift", label: "Onderschrift" }
+  ]}},
+  facebookBlok: { naam: "Facebook", velden: [{ k: "titel", label: "Titel" }, { k: "tekst", t: "lang", label: "Tekst" }] },
+  sponsors: { naam: "Sponsors", velden: [{ k: "titel", label: "Titel" }, { k: "tekst", t: "lang", label: "Tekst" }],
+    lijst: { k: "lijst", item: "sponsor", titel: "Sponsors", kopveld: "naam", nieuw: { naam: "", website: "", bestand: "" }, velden: [
+      { k: "bestand", t: "logo", label: "Logo" },
+      { r: [{ k: "naam", label: "Naam" }, { k: "website", label: "Website" }] }
+  ]}}
+};
+const ALGEMEEN = [
+  { k: "logo", t: "logo", label: "Logo" },
+  { k: "facebook", label: "Adres van de Facebookpagina" },
+  { k: "footer", label: "Naam onderaan de site" }
+];
+
+/* ---------- Toestand ---------- */
+let data = null, opgeslagen = "", wachtwoord = "";
+const open = new Set();
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const haal = pad => pad.split(".").reduce((o, k) => o?.[k], data);
+function zet(pad, waarde) {
+  const d = pad.split("."), last = d.pop();
+  d.reduce((o, k) => o[k], data)[last] = waarde;
+  gewijzigd();
+}
+function toast(t) { const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 2200); }
+function bewaarWw(w) { wachtwoord = w; try { sessionStorage.setItem("sint-ww", w); } catch {} }
+
+async function api(pad, opties = {}) {
+  const r = await fetch(pad, { ...opties, headers: { "x-wachtwoord": wachtwoord, ...(opties.headers || {}) } });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(j.fout || "Er ging iets mis"), { status: r.status });
+  return j;
+}
+
+/* ---------- Inloggen ---------- */
+let nieuwWachtwoord = false;
+async function start() {
+  try { wachtwoord = sessionStorage.getItem("sint-ww") || ""; } catch {}
+  const st = await api("/api/status");
+  if (!st.ingesteld) {
+    nieuwWachtwoord = true;
+    $("#inlogtitel").textContent = "Kies een wachtwoord";
+    $("#inloguitleg").textContent = "Dit is de eerste keer. Kies een wachtwoord van minstens 6 tekens. Geef het alleen aan mensen die de site mogen aanpassen.";
+    $("#ww2vak").hidden = false; $("#ww2").required = true;
+    $("#ww1").autocomplete = "new-password";
+    $("#inlogknop").textContent = "Wachtwoord opslaan";
+    return;
+  }
+  if (wachtwoord) {
+    try { await api("/api/login", { method: "POST" }); return openEditor(); } catch {}
+  }
+}
+$("#inlogform").addEventListener("submit", async e => {
+  e.preventDefault();
+  const w1 = $("#ww1").value, w2 = $("#ww2").value;
+  $("#inlogmelding").textContent = "";
+  try {
+    if (nieuwWachtwoord) {
+      if (w1 !== w2) throw new Error("De twee wachtwoorden zijn niet gelijk");
+      await api("/api/wachtwoord", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ nieuw: w1 }) });
+    }
+    bewaarWw(w1);
+    await api("/api/login", { method: "POST" });
+    openEditor();
+  } catch (err) { $("#inlogmelding").textContent = err.message; }
+});
+
+async function openEditor() {
+  data = await api("/api/inhoud");
+  data.volgorde = (data.volgorde || Object.keys(BLOKKEN)).filter(k => BLOKKEN[k]);
+  Object.keys(BLOKKEN).forEach(k => { if (!data.volgorde.includes(k)) data.volgorde.push(k); data[k] ||= { toon: false }; });
+  opgeslagen = JSON.stringify(data);
+  $("#inlog").hidden = true; $("#app").hidden = false;
+  tekenFormulier(); stuurVoorbeeld();
+}
+
+/* ---------- Formulier tekenen ---------- */
+function veldHtml(v, basis) {
+  if (v.r) return `<div class="rij">${v.r.map(x => veldHtml(x, basis)).join("")}</div>`;
+  const pad = basis ? basis + "." + v.k : v.k;
+  const waarde = haal(pad) ?? "";
+  const id = "v-" + pad.replace(/\./g, "-");
+  if (v.t === "foto" || v.t === "logo") return `
+    <div class="veld"><span class="lbl">${v.label}</span>
+      <div class="beeld">
+        <div class="duim ${v.t === "logo" ? "logo" : ""}" style="${waarde ? `background-image:url('${esc(waarde)}')` : ""}">${waarde ? "" : "Geen"}</div>
+        <label class="knop licht klein bestand">${waarde ? "Vervangen" : "Kies bestand"}<input type="file" accept="image/*" id="${id}" data-upload="${pad}" data-soort="${v.t}"></label>
+        ${waarde ? `<button class="knop rood klein" type="button" data-wis="${pad}">Weghalen</button>` : ""}
+      </div></div>`;
+  const type = v.t === "datum" ? "date" : v.t === "tijd" ? "time" : "text";
+  if (v.t === "lang") return `<div class="veld"><label for="${id}">${v.label}</label><textarea id="${id}" data-pad="${pad}">${esc(waarde)}</textarea></div>`;
+  return `<div class="veld"><label for="${id}">${v.label}</label><input type="${type}" id="${id}" data-pad="${pad}" value="${esc(waarde)}"></div>`;
+}
+function lijstHtml(k, L) {
+  const items = data[k][L.k] ||= [];
+  return `<div class="veld"><span class="lbl">${L.titel}</span>
+    <div class="lijst">${items.map((it, i) => `
+      <div class="item">
+        <div class="item-kop"><strong>${esc(it[L.kopveld]) || (L.item[0].toUpperCase() + L.item.slice(1) + " " + (i + 1))}</strong>
+          <button class="icoon" type="button" title="Omhoog" aria-label="Omhoog" data-item-op="${k}.${L.k}.${i}" ${i === 0 ? "disabled" : ""}>↑</button>
+          <button class="icoon" type="button" title="Omlaag" aria-label="Omlaag" data-item-neer="${k}.${L.k}.${i}" ${i === items.length - 1 ? "disabled" : ""}>↓</button>
+          <button class="icoon" type="button" title="Verwijderen" aria-label="Verwijderen" data-item-weg="${k}.${L.k}.${i}">✕</button>
+        </div>
+        ${L.velden.map(v => veldHtml(v, `${k}.${L.k}.${i}`)).join("")}
+      </div>`).join("")}
+    </div>
+    <button class="knop licht klein" type="button" data-item-erbij="${k}" style="justify-self:start;color:var(--paars)">+ ${L.item} toevoegen</button></div>`;
+}
+function tekenFormulier() {
+  const scroll = window.scrollY;
+  let html = `<section class="blok ${open.has("algemeen") ? "open" : ""}" data-blok="algemeen">
+    <div class="blok-kop"><button class="titel" type="button" data-open="algemeen">Algemeen</button></div>
+    <div class="blok-body">${ALGEMEEN.map(v => veldHtml(v, "")).join("")}</div></section>`;
+  data.volgorde.forEach((k, i) => {
+    const B = BLOKKEN[k], aan = !!data[k].toon;
+    html += `<section class="blok ${open.has(k) ? "open" : ""} ${aan ? "" : "uit"}" data-blok="${k}">
+      <div class="blok-kop">
+        <button class="titel" type="button" data-open="${k}">${B.naam}</button>
+        <label class="schakel" title="Blok tonen op de site"><input type="checkbox" data-toon="${k}" ${aan ? "checked" : ""} aria-label="${B.naam} tonen">${aan ? "Aan" : "Uit"}</label>
+        <button class="icoon" type="button" title="Blok omhoog" aria-label="${B.naam} omhoog" data-blok-op="${i}" ${i === 0 ? "disabled" : ""}>↑</button>
+        <button class="icoon" type="button" title="Blok omlaag" aria-label="${B.naam} omlaag" data-blok-neer="${i}" ${i === data.volgorde.length - 1 ? "disabled" : ""}>↓</button>
+      </div>
+      <div class="blok-body">${B.velden.map(v => veldHtml(v, k)).join("")}${B.lijst ? lijstHtml(k, B.lijst) : ""}</div>
+    </section>`;
+  });
+  html += `<div class="extra">
+    <button class="knop licht klein" type="button" id="vorige">Vorige versie terugzetten</button>
+    <button class="knop licht klein" type="button" id="wwwissel">Wachtwoord wijzigen</button>
+  </div>
+  <form class="wwvak" id="wwvak" hidden>
+    <div class="veld"><label for="wwnieuw">Nieuw wachtwoord</label><input type="password" id="wwnieuw" autocomplete="new-password"></div>
+    <button class="knop hoofd klein" type="submit" style="justify-self:start">Wachtwoord opslaan</button>
+  </form>`;
+  $("#formulier").innerHTML = html;
+  window.scrollTo(0, scroll);
+}
+
+/* ---------- Wijzigingen ---------- */
+let voorbeeldTimer;
+function stuurVoorbeeld() {
+  clearTimeout(voorbeeldTimer);
+  voorbeeldTimer = setTimeout(() => $("#voorbeeld").contentWindow?.postMessage({ type: "inhoud", inhoud: data }, location.origin), 200);
+}
+function gewijzigd() {
+  const vuil = JSON.stringify(data) !== opgeslagen;
+  $("#opslaan").disabled = !vuil;
+  $("#status").textContent = vuil ? "Niet opgeslagen wijzigingen" : "Alles opgeslagen";
+  $("#status").classList.toggle("vuil", vuil);
+  stuurVoorbeeld();
+}
+addEventListener("message", e => { if (e.origin === location.origin && e.data?.type === "voorbeeld-klaar" && data) stuurVoorbeeld(); });
+addEventListener("beforeunload", e => { if (data && JSON.stringify(data) !== opgeslagen) { e.preventDefault(); e.returnValue = ""; } });
+
+$("#formulier").addEventListener("input", e => {
+  const pad = e.target.dataset.pad;
+  if (!pad) return;
+  zet(pad, e.target.value);
+  const item = e.target.closest(".item");
+  if (item) { const kop = item.querySelector(".item-kop strong"); const l = pad.split("."); const L = BLOKKEN[l[0]]?.lijst; if (L && l[3] === L.kopveld && e.target.value) kop.textContent = e.target.value; }
+});
+
+function wissel(arr, a, b) { [arr[a], arr[b]] = [arr[b], arr[a]]; }
+$("#formulier").addEventListener("click", async e => {
+  const t = e.target.closest("button"); if (!t) return;
+  const d = t.dataset;
+  if (d.open) { open.has(d.open) ? open.delete(d.open) : open.add(d.open); t.closest(".blok").classList.toggle("open"); return; }
+  if (d.blokOp) { wissel(data.volgorde, +d.blokOp, +d.blokOp - 1); }
+  else if (d.blokNeer) { wissel(data.volgorde, +d.blokNeer, +d.blokNeer + 1); }
+  else if (d.itemErbij) { const L = BLOKKEN[d.itemErbij].lijst; data[d.itemErbij][L.k].push({ ...L.nieuw }); }
+  else if (d.itemOp || d.itemNeer || d.itemWeg) {
+    const [k, l, i] = (d.itemOp || d.itemNeer || d.itemWeg).split("."), arr = data[k][l], n = +i;
+    if (d.itemOp) wissel(arr, n, n - 1);
+    else if (d.itemNeer) wissel(arr, n, n + 1);
+    else arr.splice(n, 1);
+  }
+  else if (d.wis) { zet(d.wis, ""); }
+  else if (t.id === "vorige") { return vorigeVersie(t); }
+  else if (t.id === "wwwissel") { $("#wwvak").hidden = !$("#wwvak").hidden; return; }
+  else return;
+  tekenFormulier(); gewijzigd();
+});
+$("#formulier").addEventListener("change", async e => {
+  const t = e.target;
+  if (t.dataset.toon) { data[t.dataset.toon].toon = t.checked; tekenFormulier(); gewijzigd(); return; }
+  if (t.dataset.upload && t.files?.[0]) {
+    const label = t.closest("label"); label.firstChild.textContent = "Bezig met uploaden…";
+    try {
+      const blob = await verklein(t.files[0], t.dataset.soort === "logo" ? 900 : 1800, t.dataset.soort === "logo");
+      const r = await api("/api/upload", { method: "POST", headers: { "content-type": blob.type }, body: blob });
+      zet(t.dataset.upload, r.url); tekenFormulier(); toast("Geüpload. Vergeet niet op te slaan.");
+    } catch (err) { toast(err.message); tekenFormulier(); }
+  }
+});
+$("#formulier").addEventListener("submit", async e => {
+  if (e.target.id !== "wwvak") return;
+  e.preventDefault();
+  const nieuw = $("#wwnieuw").value;
+  try {
+    await api("/api/wachtwoord", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ nieuw }) });
+    bewaarWw(nieuw); $("#wwvak").hidden = true; toast("Wachtwoord gewijzigd");
+  } catch (err) { toast(err.message); }
+});
+
+async function verklein(bestand, max, alsPng) {
+  if (/svg|gif/.test(bestand.type)) return bestand;
+  const img = await createImageBitmap(bestand);
+  const schaal = Math.min(1, max / Math.max(img.width, img.height));
+  const c = document.createElement("canvas");
+  c.width = Math.round(img.width * schaal); c.height = Math.round(img.height * schaal);
+  c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  const type = alsPng || bestand.type === "image/png" ? "image/png" : "image/jpeg";
+  return new Promise(ok => c.toBlob(ok, type, 0.84));
+}
+
+$("#opslaan").addEventListener("click", async () => {
+  const knop = $("#opslaan"); knop.disabled = true; knop.textContent = "Opslaan…";
+  try {
+    await api("/api/inhoud", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(data) });
+    opgeslagen = JSON.stringify(data); toast("Opgeslagen. De site is bijgewerkt.");
+  } catch (err) { toast(err.message); }
+  knop.textContent = "Opslaan"; gewijzigd();
+});
+
+let vorigeBevestig = false;
+async function vorigeVersie(knop) {
+  if (!vorigeBevestig) { vorigeBevestig = true; knop.textContent = "Zeker weten? Klik nog een keer"; setTimeout(() => { vorigeBevestig = false; knop.textContent = "Vorige versie terugzetten"; }, 4000); return; }
+  vorigeBevestig = false;
+  try { data = await api("/api/vorige", { method: "POST" }); await openEditor(); toast("Vorige versie teruggezet"); }
+  catch (err) { toast(err.message); knop.textContent = "Vorige versie terugzetten"; }
+}
+
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
+  document.querySelector(".werk").dataset.tab = b.dataset.tab;
+  if (b.dataset.tab === "voorbeeld") stuurVoorbeeld();
+}));
+
+start().catch(err => { $("#inlogmelding").textContent = "De beheerpagina kan de server niet bereiken. " + err.message; });
+</script>
+</body>
+</html>

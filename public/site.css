@@ -1,0 +1,104 @@
+/* Layout: één kolom die van de avondlucht (stoomboot komt aan) afloopt naar warm rood; blokken komen uit CONFIG */
+:root{
+  --nacht:#14213f;      /* avondlucht boven de haven */
+  --nacht-2:#1d2d55;
+  --mijter:#bc1a14;     /* rood uit het logo */
+  --goud:#ffde59;       /* geel uit het logo */
+  --paars:#663d8f;      /* paars rondje "in" */
+  --choco:#5b3220;      /* chocoladeletter */
+  --sneeuw:#fbf7f0;
+  --tekst:#fbf7f0;
+  --zacht:#c9d2ea;
+  --f-display:"Bagel Fat One","Arial Rounded MT Bold","Trebuchet MS",sans-serif;
+  --f-body:"Figtree","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--nacht);color:var(--tekst);font-family:var(--f-body);font-size:17px;line-height:1.55}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2{font-family:var(--f-display);font-weight:400;line-height:1.05;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.9rem,5vw,2.8rem);color:var(--goud)}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:3px solid var(--goud);outline-offset:3px;border-radius:6px}
+.label{font-size:.78rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--goud)}
+section{padding-block:clamp(48px,8vw,88px)}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;background-color:var(--nacht);background-size:cover;background-position:center 40%;padding-block:clamp(24px,5vw,48px) 0}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.merk{display:block;background:var(--goud);border-radius:14px;padding:10px 14px;box-shadow:0 6px 0 rgba(0,0,0,.25);transform:rotate(-2deg);line-height:0}
+.merk img{display:block;height:clamp(48px,9vw,72px);width:auto}
+.hero h1{text-shadow:0 3px 18px rgba(10,16,34,.6)}
+.hero p.sub{text-shadow:0 2px 10px rgba(10,16,34,.8)}
+.fb-knop{display:inline-flex;align-items:center;gap:8px;background:var(--sneeuw);color:var(--nacht);font-weight:800;text-decoration:none;padding:10px 16px;border-radius:999px;font-size:.95rem}
+.fb-knop:hover{background:var(--goud)}
+.fb-knop svg{width:18px;height:18px;fill:currentColor}
+.hero-kern{position:relative;z-index:2;padding-block:clamp(40px,8vw,90px) clamp(36px,6vw,60px);display:grid;gap:22px}
+.hero h1{font-size:clamp(3rem,11vw,7rem);color:var(--sneeuw)}
+.hero h1 span{color:var(--goud);display:block}
+.hero p.sub{font-size:clamp(1.1rem,2.6vw,1.35rem);color:var(--sneeuw);max-width:34ch;margin:0}
+.datum-chip{color:var(--sneeuw)}
+.datum-chip{justify-self:start;display:inline-flex;gap:10px;align-items:baseline;background:var(--mijter);padding:10px 18px;border-radius:12px;font-weight:800;font-size:1.1rem;transform:rotate(-1.5deg)}
+.datum-chip b{font-family:var(--f-display);font-weight:400;font-size:1.5rem}
+.boot{position:relative;z-index:1;display:block;width:100%;height:auto;max-width:100%;margin-top:-10px}
+.pepernoot{position:absolute;top:-20px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#b77a4b,#7a4524);z-index:1;animation:val linear infinite;opacity:.85}
+@keyframes val{to{transform:translateY(120vh) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.pepernoot{display:none}}
+
+/* AFTELKLOK */
+.klok{background:var(--nacht-2)}
+.klok .wrap{display:grid;gap:26px;justify-items:center;text-align:center}
+.letters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,2.5vw,22px);width:100%;max-width:720px}
+.letter{position:relative;background:linear-gradient(160deg,#7a4529 0%,var(--choco) 55%,#43231a 100%);border-radius:10px 10px 14px 14px;padding:22px 6px 14px;box-shadow:0 8px 0 #2c160f,0 14px 24px rgba(0,0,0,.35);overflow:hidden}
+.letter::before{content:"";position:absolute;inset:0 0 auto;height:14px;background:repeating-linear-gradient(90deg,var(--goud) 0 10px,#e0a92c 10px 20px)}
+.letter .n{font-family:var(--f-display);font-size:clamp(2.2rem,9vw,4.4rem);line-height:1;color:var(--sneeuw);font-variant-numeric:tabular-nums}
+.letter .e{font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#f0d6b8;margin-top:6px}
+.klok-tekst{color:var(--zacht);margin:0;font-size:1.05rem}
+.zover{font-family:var(--f-display);font-size:clamp(2rem,7vw,3.6rem);color:var(--goud)}
+
+/* PROGRAMMA */
+.programma{background:var(--sneeuw);color:var(--nacht)}
+.programma h2{color:var(--mijter)}
+.programma .label{color:var(--mijter)}
+.prog-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:clamp(24px,5vw,60px);align-items:start}
+.prog-intro p{margin:14px 0 0;max-width:40ch}
+.tijdlijn{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.tijdlijn li{display:grid;grid-template-columns:76px minmax(0,1fr);gap:16px;padding:16px 0;border-bottom:2px dashed #e3d6c4}
+.tijdlijn li:last-child{border-bottom:0}
+.tijd{font-family:var(--f-display);font-size:1.35rem;color:var(--mijter);font-variant-numeric:tabular-nums}
+.tijdlijn strong{display:block;font-size:1.08rem}
+.tijdlijn span.waar{display:block;color:#5a6178;font-size:.95rem;margin-top:6px}
+.tijden{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{font-size:.82rem;font-weight:800;padding:3px 10px;border-radius:999px;background:#fde3e1;color:var(--mijter);font-variant-numeric:tabular-nums}
+.chip.uit{background:#ece4f5;color:var(--paars)}
+.voorbeeld{display:inline-block;margin-top:14px;font-size:.8rem;font-weight:800;background:#fff0c7;color:#7a5600;padding:4px 10px;border-radius:6px}
+
+/* FOTO'S */
+.fotos .kop{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+.foto-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px}
+.foto{margin:0;aspect-ratio:4/3;max-width:100%;border-radius:12px;overflow:hidden;background:var(--nacht-2);position:relative}
+.foto img{width:100%;height:100%;object-fit:cover;display:block}
+.foto figcaption{position:absolute;inset:auto 0 0;padding:10px 12px;font-size:.88rem;font-weight:600;background:linear-gradient(transparent,rgba(10,16,34,.85))}
+.foto.leeg{display:grid;place-items:center;border:2px dashed #3a4c80;background:transparent;color:var(--zacht);text-align:center;padding:12px;font-size:.92rem}
+.foto.leeg figcaption{position:static;background:none;padding:0}
+
+/* FACEBOOK */
+.facebook{background:var(--mijter)}
+.fb-blok{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+.fb-blok h2{color:var(--sneeuw)}
+.fb-blok p{margin:10px 0 0;max-width:46ch;color:#ffe3e3}
+.facebook .fb-knop{font-size:1.05rem;padding:14px 22px}
+
+/* SPONSORS */
+.sponsors{background:var(--sneeuw);color:var(--nacht);text-align:center}
+.sponsors h2{color:var(--nacht);font-size:clamp(1.6rem,4vw,2.2rem)}
+.sponsors p{margin:10px auto 30px;color:#5a6178;max-width:46ch}
+.logo-rij{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:640px){.logo-rij{grid-template-columns:repeat(2,minmax(0,1fr))}.prog-grid{grid-template-columns:minmax(0,1fr)}}
+.logo{display:grid;place-items:center;aspect-ratio:3/2;max-width:100%;background:#fff;border:1px solid #e8e1d4;border-radius:12px;padding:16px;text-decoration:none;transition:transform .15s}
+a.logo:hover{transform:translateY(-3px)}
+.logo img{max-height:100%;max-width:100%;object-fit:contain}
+.logo.leeg{border-style:dashed;color:#8a8fa3;font-weight:600;font-size:.9rem;background:transparent}
+
+footer{background:var(--nacht);color:var(--zacht);font-size:.9rem;padding-block:28px}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}

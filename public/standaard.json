@@ -1,0 +1,60 @@
+{
+  "logo": "/logo.png",
+  "facebook": "https://www.facebook.com/sintinijsselstein/",
+  "footer": "Stichting Sint in IJsselstein",
+  "volgorde": ["hero", "aftelklok", "programma", "fotos", "facebookBlok", "sponsors"],
+  "hero": {
+    "toon": true,
+    "foto": "/fotos/aankomst-boot.jpg",
+    "titel": "Hij komt…",
+    "titel2": "hij komt…",
+    "tekst": "Sinterklaas en zijn Pieten komen naar IJsselstein. Kom je ze ook verwelkomen?",
+    "datumTekst": "Intocht",
+    "datumGroot": "21 november, 11:00"
+  },
+  "aftelklok": {
+    "toon": true,
+    "datum": "2026-11-21",
+    "tijd": "11:00",
+    "tekst": "Nog even slapen tot de intocht",
+    "klaarTekst": "Sinterklaas is in IJsselstein!"
+  },
+  "programma": {
+    "toon": true,
+    "titel": "Het programma",
+    "tekst": "Hier zie je waar Sinterklaas wanneer is. Kom op tijd, dan sta je vooraan.",
+    "onderdelen": [
+      { "plek": "Kade Hazenveld", "aankomst": "11:00", "vertrek": "11:30", "info": "Sint komt aan met de boot. Vanaf 10:30 is er Pietenpret op Hazenveld en langs de kade." },
+      { "plek": "De Plaats", "aankomst": "11:45", "vertrek": "12:30", "info": "Sint komt met de auto via IJsselstraat, Kerkstraat en Utrechtsestraat. De burgemeester begroet hem en geeft hem de gouden sleutel van de stad." },
+      { "plek": "Clinckhoeff", "aankomst": "13:10", "vertrek": "13:55", "info": "Sint komt met de tram vanaf halte Binnenstad." },
+      { "plek": "Achterveld", "aankomst": "14:20", "vertrek": "14:55", "info": "" },
+      { "plek": "Zenderpark", "aankomst": "15:13", "vertrek": "15:35", "info": "Sint komt met de tram." },
+      { "plek": "Logeeradres Benschopperstraat", "aankomst": "16:15", "vertrek": "", "info": "Sint loopt met alle Pieten en de Hoetentoeters vanaf halte Binnenstad naar zijn logeeradres. Om 16:30 is het programma afgelopen." }
+    ]
+  },
+  "fotos": {
+    "toon": true,
+    "titel": "Vorige jaren",
+    "lijst": [
+      { "bestand": "/fotos/sleutel-van-de-stad.jpg", "onderschrift": "Sinterklaas krijgt de sleutel van de stad" },
+      { "bestand": "/fotos/stadhuis-muziek.jpg", "onderschrift": "Feest met muziek bij het stadhuis" },
+      { "bestand": "/fotos/pietenpost.jpg", "onderschrift": "Pietenpost: post je brief voor de Sint" }
+    ]
+  },
+  "facebookBlok": {
+    "toon": true,
+    "titel": "Volg ons op Facebook",
+    "tekst": "Het laatste nieuws, foto's en verrassingen van de Pieten zie je als eerste op onze Facebookpagina."
+  },
+  "sponsors": {
+    "toon": true,
+    "titel": "Met dank aan onze sponsors",
+    "tekst": "De Sinterklaasintocht in IJsselstein wordt mede mogelijk gemaakt door:",
+    "lijst": [
+      { "naam": "", "website": "", "bestand": "" },
+      { "naam": "", "website": "", "bestand": "" },
+      { "naam": "", "website": "", "bestand": "" },
+      { "naam": "", "website": "", "bestand": "" }
+    ]
+  }
+}
