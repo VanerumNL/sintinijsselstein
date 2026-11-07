@@ -146,3 +146,39 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 @media (max-width:480px){.letter{padding:20px 2px 12px}.letter .e{letter-spacing:.02em}}
 
 footer .uitgezonden{opacity:.75}
+
+/* ===== Fotocarrousel ===== */
+.car{position:relative}
+.car-spoor{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;border-radius:14px;background:var(--nacht-2);-webkit-overflow-scrolling:touch}
+.car-spoor::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;margin:0;position:relative;aspect-ratio:16/10;max-height:78vh;min-width:0;background:var(--nacht-2)}
+.slide img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
+.slide figcaption{position:absolute;inset:auto 0 0;padding:48px clamp(14px,3vw,28px) clamp(14px,2.4vw,22px);font-family:var(--f-display);font-size:clamp(1.05rem,2.6vw,1.5rem);line-height:1.2;color:var(--sneeuw);background:linear-gradient(transparent,rgba(10,16,34,.88));text-wrap:balance}
+.car-spoor:focus-visible{outline:3px solid var(--goud);outline-offset:3px}
+.car-pijl{position:absolute;top:calc(50% - 30px);transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:0;background:rgba(251,247,240,.92);color:var(--nacht);display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.35);padding:0;transition:background .15s,transform .15s}
+.car-pijl:hover{background:var(--goud)}
+.car-pijl:active{transform:translateY(-50%) scale(.94)}
+.car-pijl svg{width:22px;height:22px}
+.car-pijl.vorige{left:clamp(8px,2vw,16px)}
+.car-pijl.volgende{right:clamp(8px,2vw,16px)}
+.car-onder{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px}
+.car-pauze{flex:none;width:36px;height:36px;border-radius:50%;border:1.5px solid #3a4c80;background:transparent;color:var(--zacht);display:grid;place-items:center;cursor:pointer;padding:0}
+.car-pauze:hover{color:var(--goud);border-color:var(--goud)}
+.car-pauze svg{width:16px;height:16px}
+.car-pauze .i-speel{display:none}
+.car.gepauzeerd .car-pauze .i-speel{display:block}
+.car.gepauzeerd .car-pauze .i-pauze{display:none}
+.car-stippen{display:flex;flex-wrap:wrap;justify-content:center;max-width:100%;min-width:0}
+.car-stippen button{position:relative;width:24px;height:24px;border:0;background:none;padding:0;cursor:pointer}
+.car-stippen button::before{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:999px;background:#3a4c80;transform:translate(-50%,-50%);transition:width .2s,background .2s}
+.car-stippen button[aria-current="true"]::before{width:26px;background:var(--goud)}
+.car-stippen button:hover::before{background:var(--zacht)}
+.car-stippen button:focus-visible,.car-pijl:focus-visible,.car-pauze:focus-visible{outline:3px solid var(--goud);outline-offset:2px;border-radius:50%}
+.fotos .foto.leeg{aspect-ratio:16/6}
+@media (max-width:640px){
+  .slide{aspect-ratio:4/3}
+  .car-pijl{width:40px;height:40px}
+  .car-pijl svg{width:18px;height:18px}
+  .slide figcaption{padding-top:36px}
+}
+@media (prefers-reduced-motion:reduce){.car-spoor{scroll-behavior:auto}.car-stippen button::before{transition:none}}

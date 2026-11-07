@@ -74,17 +74,31 @@
   </div>
 </section>`,
 
-    fotos: B => `
+    fotos: B => {
+      const lijst = (B.lijst || []).filter(f => beeld(f.bestand));
+      const n = lijst.length;
+      const pijl = r => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${r ? "M9 5l7 7-7 7" : "M15 5l-7 7 7 7"}" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      const carrousel = !n
+        ? `<div class="foto leeg"><span>Foto's volgen</span></div>`
+        : `<div class="car" data-seconden="${esc(B.seconden ?? 5)}" role="region" aria-roledescription="carrousel" aria-label="${esc(B.titel)}">
+      <div class="car-spoor" tabindex="0" aria-live="off">
+        ${lijst.map((f, i) => `<figure class="slide" role="group" aria-roledescription="dia" aria-label="Foto ${i + 1} van ${n}"><img src="${beeld(f.bestand)}" alt="${esc(f.onderschrift)}" ${i ? 'loading="lazy"' : ""} decoding="async" draggable="false">${f.onderschrift ? `<figcaption>${esc(f.onderschrift)}</figcaption>` : ""}</figure>`).join("")}
+      </div>
+      ${n > 1 ? `<button class="car-pijl vorige" type="button" aria-label="Vorige foto">${pijl(false)}</button>
+      <button class="car-pijl volgende" type="button" aria-label="Volgende foto">${pijl(true)}</button>
+      <div class="car-onder">
+        <button class="car-pauze" type="button" aria-label="Pauzeer de diavoorstelling" aria-pressed="false"><svg class="i-pauze" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg><svg class="i-speel" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg></button>
+        <div class="car-stippen">${lijst.map((f, i) => `<button type="button" aria-label="Ga naar foto ${i + 1}" data-i="${i}"></button>`).join("")}</div>
+      </div>` : ""}
+    </div>`;
+      return `
 <section class="fotos">
   <div class="wrap">
     <div class="kop"><div><span class="rubriek">Terugblik</span><h2>${esc(B.titel)}</h2></div></div>
-    <div class="foto-grid">
-      ${(B.lijst || []).map(f => beeld(f.bestand)
-        ? `<figure class="foto"><img src="${beeld(f.bestand)}" alt="${esc(f.onderschrift)}" loading="lazy">${f.onderschrift ? `<figcaption>${esc(f.onderschrift)}</figcaption>` : ""}</figure>`
-        : `<figure class="foto leeg"><figcaption>Foto volgt${f.onderschrift ? "<br>" + esc(f.onderschrift) : ""}</figcaption></figure>`).join("")}
-    </div>
+    ${carrousel}
   </div>
-</section>`,
+</section>`;
+    },
 
     facebookBlok: (B, C) => `
 <section class="facebook">
@@ -147,6 +161,84 @@
     tik();
   }
 
+  /* Fotocarrousel: veegt of scrolt per foto, pijlen en stippen, wisselt zelf van foto (te pauzeren). */
+  let carOpruim = null;
+  function carrousel() {
+    if (carOpruim) { carOpruim(); carOpruim = null; }
+    const el = document.querySelector(".car");
+    if (!el) return;
+    const spoor = el.querySelector(".car-spoor");
+    const slides = [...spoor.children];
+    const n = slides.length;
+    if (n < 2) return;
+    const stippen = [...el.querySelectorAll(".car-stippen button")];
+    const pauzeKnop = el.querySelector(".car-pauze");
+    const rustig = matchMedia("(prefers-reduced-motion: reduce)");
+    const seconden = parseFloat(el.dataset.seconden);
+    const duur = seconden > 0 ? Math.max(2, seconden) * 1000 : 0;
+    let nu = 0, wacht = false, handmatigGepauzeerd = false, zichtbaar = true, laatsteGebruik = 0;
+
+    const toon = i => {
+      nu = i;
+      stippen.forEach((s, k) => s.setAttribute("aria-current", k === i ? "true" : "false"));
+    };
+    const ga = (i, zacht = true) => {
+      i = (i + n) % n;
+      spoor.scrollTo({ left: i * spoor.clientWidth, behavior: zacht && !rustig.matches ? "smooth" : "auto" });
+      toon(i);
+    };
+    let raf = 0;
+    const opScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const i = Math.round(spoor.scrollLeft / spoor.clientWidth);
+        if (i !== nu && i >= 0 && i < n) toon(i);
+      });
+    };
+    const gebruik = () => { laatsteGebruik = Date.now(); };
+
+    el.querySelector(".vorige").addEventListener("click", () => { gebruik(); ga(nu - 1); });
+    el.querySelector(".volgende").addEventListener("click", () => { gebruik(); ga(nu + 1); });
+    stippen.forEach(s => s.addEventListener("click", () => { gebruik(); ga(+s.dataset.i); }));
+    spoor.addEventListener("scroll", opScroll, { passive: true });
+    spoor.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft") { e.preventDefault(); gebruik(); ga(nu - 1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); gebruik(); ga(nu + 1); }
+    });
+    const pauzeer = () => { wacht = true; };
+    const hervat = () => { wacht = false; gebruik(); };
+    el.addEventListener("mouseenter", pauzeer);
+    el.addEventListener("mouseleave", hervat);
+    el.addEventListener("focusin", pauzeer);
+    el.addEventListener("focusout", hervat);
+    el.addEventListener("touchstart", () => { pauzeer(); gebruik(); }, { passive: true });
+    el.addEventListener("touchend", () => { gebruik(); wacht = false; }, { passive: true });
+
+    const zetPauzeKnop = () => {
+      pauzeKnop.setAttribute("aria-pressed", String(handmatigGepauzeerd));
+      pauzeKnop.setAttribute("aria-label", handmatigGepauzeerd ? "Speel de diavoorstelling af" : "Pauzeer de diavoorstelling");
+      el.classList.toggle("gepauzeerd", handmatigGepauzeerd);
+    };
+    pauzeKnop.addEventListener("click", () => { handmatigGepauzeerd = !handmatigGepauzeerd; zetPauzeKnop(); });
+    if (!duur || rustig.matches) pauzeKnop.hidden = true;
+
+    const io = "IntersectionObserver" in window ? new IntersectionObserver(([x]) => { zichtbaar = x.isIntersecting; }, { threshold: 0.35 }) : null;
+    if (io) io.observe(el);
+    const opHerschalen = () => spoor.scrollTo({ left: nu * spoor.clientWidth, behavior: "auto" });
+    addEventListener("resize", opHerschalen);
+
+    const klok = duur && !rustig.matches ? setInterval(() => {
+      if (wacht || handmatigGepauzeerd || !zichtbaar || document.hidden) return;
+      if (Date.now() - laatsteGebruik < duur) return;
+      ga(nu + 1);
+      laatsteGebruik = Date.now(); // volgende wissel na een volle periode
+    }, 500) : 0;
+    laatsteGebruik = Date.now();
+    toon(0);
+
+    carOpruim = () => { clearInterval(klok); removeEventListener("resize", opHerschalen); if (io) io.disconnect(); cancelAnimationFrame(raf); };
+  }
+
   function render(C) {
     if (!C || typeof C !== "object") return;
     const volgorde = (C.volgorde || BLOKKEN).filter(k => blok[k]);
@@ -155,6 +247,7 @@
     html += `<footer><div class="wrap"><span>© ${new Date().getFullYear()} ${esc(C.footer)} <span class="uitgezonden">· Uitgezonden vanuit IJsselstein</span></span>${C.facebook ? `<a href="${link(C.facebook)}" target="_blank" rel="noopener">Facebook</a>` : ""}</div></footer>`;
     document.getElementById("site").innerHTML = html;
     pepernoten();
+    carrousel();
     if (C.aftelklok?.toon) aftelklok(C.aftelklok); else clearInterval(timer);
   }
 

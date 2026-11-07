@@ -88,7 +88,8 @@
         "bestand": "/fotos/pietenpost.jpg",
         "onderschrift": "Pietenpost: post je brief voor de Sint"
       }
-    ]
+    ],
+    "seconden": 5
   },
   "facebookBlok": {
     "toon": true,

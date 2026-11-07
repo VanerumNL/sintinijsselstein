@@ -153,8 +153,8 @@ const BLOKKEN = {
     { r: [{ k: "aankomst", t: "tijd", label: "Aankomst" }, { k: "vertrek", t: "tijd", label: "Vertrek (leeg = geen)" }] },
     { k: "info", t: "lang", label: "Uitleg" }
   ]}},
-  fotos: { naam: "Foto's", velden: [{ k: "titel", label: "Titel" }],
-    lijst: { k: "lijst", item: "foto", titel: "Foto's", kopveld: "onderschrift", nieuw: { bestand: "", onderschrift: "" }, velden: [
+  fotos: { naam: "Foto's (carrousel)", velden: [{ k: "titel", label: "Titel" }, { k: "seconden", label: "Seconden per foto (0 = niet automatisch wisselen)" }],
+    lijst: { k: "lijst", item: "foto", titel: "Foto's in de carrousel", meerdere: true, kopveld: "onderschrift", nieuw: { bestand: "", onderschrift: "" }, velden: [
       { k: "bestand", t: "foto", label: "Foto" }, { k: "onderschrift", label: "Onderschrift" }
   ]}},
   facebookBlok: { naam: "Facebook", velden: [{ k: "titel", label: "Titel" }, { k: "tekst", t: "lang", label: "Tekst" }] },
@@ -264,7 +264,9 @@ function lijstHtml(k, L) {
         ${L.velden.map(v => veldHtml(v, `${k}.${L.k}.${i}`)).join("")}
       </div>`).join("")}
     </div>
-    <button class="knop licht klein" type="button" data-item-erbij="${k}" style="justify-self:start;color:var(--paars)">+ ${L.item} toevoegen</button></div>`;
+    ${L.meerdere
+      ? `<label class="knop hoofd klein bestand" style="justify-self:start">+ Foto's toevoegen (je kunt er meerdere kiezen)<input type="file" accept="image/*" multiple data-multi="${k}.${L.k}"></label>`
+      : `<button class="knop licht klein" type="button" data-item-erbij="${k}" style="justify-self:start;color:var(--paars)">+ ${L.item} toevoegen</button>`}</div>`;
 }
 function tekenFormulier() {
   const scroll = window.scrollY;
@@ -343,6 +345,21 @@ $("#formulier").addEventListener("change", async e => {
   const t = e.target;
   if (t.dataset.vink) { zet(t.dataset.vink, t.checked); return; }
   if (t.dataset.toon) { data[t.dataset.toon].toon = t.checked; tekenFormulier(); gewijzigd(); return; }
+  if (t.dataset.multi && t.files?.length) {
+    const [k, l] = t.dataset.multi.split("."), bestanden = [...t.files], label = t.closest("label");
+    let gelukt = 0, mislukt = 0, laatste = "";
+    for (const [i, f] of bestanden.entries()) {
+      label.firstChild.textContent = `Bezig met uploaden (${i + 1} van ${bestanden.length})…`;
+      try {
+        const blob = await verklein(f, 1800, false);
+        const r = await api("/api/upload", { method: "POST", headers: { "content-type": blob.type }, body: blob });
+        data[k][l].push({ bestand: r.url, onderschrift: "" }); gelukt++;
+      } catch (err) { mislukt++; laatste = err.message; }
+    }
+    open.add(k); tekenFormulier(); gewijzigd();
+    toast(mislukt ? `${gelukt} geüpload, ${mislukt} mislukt: ${laatste}` : `${gelukt} foto${gelukt === 1 ? "" : "'s"} toegevoegd. Vergeet niet op te slaan.`);
+    return;
+  }
   if (t.dataset.upload && t.files?.[0]) {
     const label = t.closest("label"); label.firstChild.textContent = "Bezig met uploaden…";
     try {
