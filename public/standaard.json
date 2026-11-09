@@ -169,7 +169,8 @@
       "titel": "Pietendag",
       "datum": "28 november 2026",
       "tekst": "Met Circus Tadaa op het Stadhuisplein. Sinterklaas en de Pieten lopen de hele dag door het stadje.",
-      "versiering": true
+      "versiering": true,
+      "skyline": true
     },
     "aftelklok": {
       "toon": true,
