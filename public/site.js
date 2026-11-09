@@ -332,12 +332,6 @@
     html += `<footer><div class="wrap"><span>© ${new Date().getFullYear()} ${esc(C.footer)} <span class="uitgezonden">· Uitgezonden vanuit IJsselstein</span></span>${C.facebook ? `<a href="${link(C.facebook)}" target="_blank" rel="noopener">Facebook</a>` : ""}</div></footer>`;
     document.getElementById("site").innerHTML = html;
     if (!pd) pepernoten(); else lekkerRegen();
-    /* Lichte IJsselstein-skyline onderin elk blok (kleur volgt de tekstkleur van het blok). */
-    const hero = pd ? C.pietendag?.hero : C.hero;
-    if ((pd ? hero?.skyline : hero?.toren) !== false)
-      document.querySelectorAll("#site > header, #site > section").forEach(el => {
-        const d = document.createElement("div"); d.className = "sk-bg"; d.setAttribute("aria-hidden", "true"); el.prepend(d);
-      });
     carrousel();
     const klok = dataVan("aftelklok");
     if (klok?.toon) aftelklok(klok); else clearInterval(timer);

@@ -19,8 +19,7 @@
     "titel2": "hij komt…",
     "tekst": "Sinterklaas en zijn Pieten komen naar IJsselstein. Kom je ze ook verwelkomen?",
     "datumTekst": "Intocht",
-    "datumGroot": "21 november, 11:00",
-    "toren": true
+    "datumGroot": "21 november, 11:00"
   },
   "aftelklok": {
     "toon": true,
@@ -169,8 +168,7 @@
       "titel": "Pietendag",
       "datum": "28 november 2026",
       "tekst": "Met Circus Tadaa op het Stadhuisplein. Sinterklaas en de Pieten lopen de hele dag door het stadje.",
-      "versiering": true,
-      "skyline": true
+      "versiering": true
     },
     "aftelklok": {
       "toon": true,
