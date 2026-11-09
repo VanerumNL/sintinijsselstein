@@ -1,3 +1,6 @@
+@font-face{font-family:"Catalunya";src:url(/fonts/catalunya.ttf) format("truetype");font-display:swap}
+@font-face{font-family:"Worcestershire";src:url(/fonts/worcestershire.ttf) format("truetype");font-display:swap}
+@font-face{font-family:"Windsor";src:url(/fonts/windsor.ttf) format("truetype");font-display:swap}
 /* Layout: één kolom die van de avondlucht (stoomboot komt aan) afloopt naar warm rood; blokken komen uit CONFIG */
 :root{
   --nacht:#14213f;      /* avondlucht boven de haven */
@@ -9,15 +12,16 @@
   --sneeuw:#fbf7f0;
   --tekst:#fbf7f0;
   --zacht:#c9d2ea;
-  --f-display:"Bagel Fat One","Arial Rounded MT Bold","Trebuchet MS",sans-serif;
+  --f-display:"Worcestershire","Antonio","Arial Narrow",sans-serif;
+  --f-script:"Catalunya","Brush Script MT",cursive;
   --f-body:"Figtree","Segoe UI",system-ui,sans-serif;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--nacht);color:var(--tekst);font-family:var(--f-body);font-size:17px;line-height:1.55}
+body{font-synthesis:none;margin:0;background:var(--nacht);color:var(--tekst);font-family:var(--f-body);font-size:17px;line-height:1.55}
 .wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-h1,h2{font-family:var(--f-display);font-weight:400;line-height:1.05;text-wrap:balance;margin:0}
-h2{font-size:clamp(1.9rem,5vw,2.8rem);color:var(--goud)}
+h1,h2{font-family:var(--f-script);font-weight:400;line-height:1.05;text-wrap:balance;margin:0}
+h2{font-size:clamp(2.6rem,7vw,4rem);color:var(--goud)}
 a{color:inherit}
 a:focus-visible,button:focus-visible{outline:3px solid var(--goud);outline-offset:3px;border-radius:6px}
 .label{font-size:.78rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--goud)}
@@ -34,7 +38,7 @@ section{padding-block:clamp(48px,8vw,88px)}
 .fb-knop:hover{background:var(--goud)}
 .fb-knop svg{width:18px;height:18px;fill:currentColor}
 .hero-kern{position:relative;z-index:2;padding-block:clamp(40px,8vw,90px) clamp(36px,6vw,60px);display:grid;gap:22px}
-.hero h1{font-size:clamp(3rem,11vw,7rem);color:var(--sneeuw)}
+.hero h1{font-size:clamp(3.6rem,13vw,8.4rem);color:var(--sneeuw)}
 .hero h1 span{color:var(--goud);display:block}
 .hero p.sub{font-size:clamp(1.1rem,2.6vw,1.35rem);color:var(--sneeuw);max-width:34ch;margin:0}
 .datum-chip{color:var(--sneeuw)}
@@ -54,7 +58,7 @@ section{padding-block:clamp(48px,8vw,88px)}
 .letter .n{font-family:var(--f-display);font-size:clamp(2.2rem,9vw,4.4rem);line-height:1;color:var(--sneeuw);font-variant-numeric:tabular-nums}
 .letter .e{font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#f0d6b8;margin-top:6px}
 .klok-tekst{color:var(--zacht);margin:0;font-size:1.05rem}
-.zover{font-family:var(--f-display);font-size:clamp(2rem,7vw,3.6rem);color:var(--goud)}
+.zover{font-family:var(--f-script);font-size:clamp(2rem,7vw,3.6rem);color:var(--goud)}
 
 /* PROGRAMMA */
 .programma{background:var(--sneeuw);color:var(--nacht)}
@@ -104,7 +108,7 @@ footer{background:var(--nacht);color:var(--zacht);font-size:.9rem;padding-block:
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 /* ===== Sint-nieuws: uitzending vanuit IJsselstein ===== */
-:root{--f-nieuws:"Archivo Narrow","Arial Narrow","Roboto Condensed",sans-serif;--perkament:#f8f0dc}
+:root{--f-nieuws:"Worcestershire","Archivo Narrow","Arial Narrow",sans-serif;--perkament:#f8f0dc}
 
 /* nieuwsbalk */
 .nieuwsbalk{display:flex;align-items:stretch;background:var(--mijter);color:#fff;font-family:var(--f-nieuws);font-weight:700;font-size:1rem;overflow:hidden;position:relative;z-index:3}
@@ -183,9 +187,6 @@ footer .uitgezonden{opacity:.75}
 }
 @media (prefers-reduced-motion:reduce){.car-spoor{scroll-behavior:auto}.car-stippen button::before{transition:none}}
 
-@font-face{font-family:"Catalunya";src:url(/fonts/catalunya.ttf) format("truetype");font-display:swap}
-@font-face{font-family:"Worcestershire";src:url(/fonts/worcestershire.ttf) format("truetype");font-display:swap}
-@font-face{font-family:"Windsor";src:url(/fonts/windsor.ttf) format("truetype");font-display:swap}
 /* =====================================================================
    PIETENDAG-versie — stijl van de poster: lucht-blauw, marine letters,
    rode accenten en het geel met rood van het Circus Tadaa-logo.
