@@ -140,5 +140,66 @@
         "tekst": "Volg het laatste nieuws op onze Facebookpagina"
       }
     ]
+  },
+  "modus": "intocht",
+  "omschakelen": "",
+  "pietendag": {
+    "nieuwsbalk": {
+      "toon": true,
+      "label": "Laatste nieuws",
+      "items": [
+        {
+          "tekst": "Pietendag is op zaterdag 28 november"
+        },
+        {
+          "tekst": "Om 12:00 uur wordt Sinterklaas wakker gezongen in het Pietenhuis, Benschopperstraat 25"
+        },
+        {
+          "tekst": "Circus Tadaa van 12:45 tot 15:45 uur op het Stadhuisplein"
+        },
+        {
+          "tekst": "Sinterklaas en de Pieten lopen de hele dag door het stadje"
+        }
+      ]
+    },
+    "hero": {
+      "toon": true,
+      "met": "Met",
+      "tadaa": "/pietendag/circus-tadaa.webp",
+      "titel": "Pietendag",
+      "datum": "28 november 2026",
+      "tekst": "Met Circus Tadaa op het Stadhuisplein. Sinterklaas en de Pieten lopen de hele dag door het stadje.",
+      "versiering": true
+    },
+    "aftelklok": {
+      "toon": true,
+      "datum": "2026-11-28",
+      "tijd": "12:00",
+      "tekst": "Nog even tot we Sinterklaas wakker zingen",
+      "klaarTekst": "Het is Pietendag!"
+    },
+    "programma": {
+      "toon": true,
+      "titel": "Het programma",
+      "tekst": "",
+      "heledag": "Sinterklaas en de Pieten lopen de hele dag door het stadje.",
+      "onderdelen": [
+        {
+          "tekst": "Sinterklaas wakker zingen bij het *Pietenhuis*",
+          "tijd": "12:00",
+          "info": "Benschopperstraat 25"
+        },
+        {
+          "tekst": "Circus Tadaa op het *Stadhuisplein*",
+          "tijd": "12:45 – 15:45",
+          "info": ""
+        },
+        {
+          "tekst": "Sinterklaas naar bed brengen in het *Pietenhuis*",
+          "tijd": "",
+          "info": "Benschopperstraat 25"
+        }
+      ]
+    }
   }
 }

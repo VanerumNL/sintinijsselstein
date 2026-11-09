@@ -182,3 +182,98 @@ footer .uitgezonden{opacity:.75}
   .slide figcaption{padding-top:36px}
 }
 @media (prefers-reduced-motion:reduce){.car-spoor{scroll-behavior:auto}.car-stippen button::before{transition:none}}
+
+/* =====================================================================
+   PIETENDAG-versie — stijl van de poster: lucht-blauw, marine letters,
+   rode accenten en het geel met rood van het Circus Tadaa-logo.
+   Alles staat onder body.pd, dus de intocht-versie verandert niet.
+   ===================================================================== */
+body.pd{
+  --pd-navy:#1a2252; --pd-rood:#d92027; --pd-geel:#fff02a; --pd-licht:#68cbf0; --pd-blauw:#45aedc;
+  --f-pd:"Antonio","Oswald","Arial Narrow",sans-serif; --f-script:"Kaushan Script","Brush Script MT",cursive;
+  --mijter:#d92027;
+  background:var(--pd-blauw);color:var(--pd-navy);
+}
+body.pd::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(120% 90% at 50% 36%,#68cbf0 0%,#4db4e0 46%,#3a9fd2 100%)}
+body.pd h2{color:var(--pd-navy);font-family:var(--f-pd);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+body.pd .facebook h2{color:#fff}
+body.pd .merk{background:var(--goud)}
+
+/* zwevende versiering uit de poster */
+body.pd .deco{position:absolute;z-index:0;pointer-events:none;user-select:none;height:auto;max-width:none}
+body.pd .pd-hero,body.pd .pd-klok,body.pd .pd-programma{position:relative;overflow:clip}
+body.pd .pd-hero>.wrap,body.pd .pd-klok>.wrap,body.pd .pd-programma>.wrap{position:relative;z-index:2}
+@keyframes zweef{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-10px) rotate(calc(var(--r,0deg) + 3deg))}}
+body.pd .d-sint{--r:172deg;width:clamp(150px,22vw,300px);left:max(24%,330px);top:-9%;transform:rotate(var(--r));animation:none}
+body.pd .d-n1{width:clamp(54px,8vw,110px);right:7%;top:30%}
+body.pd .d-n2{width:clamp(44px,6vw,84px);left:12%;bottom:9%}
+body.pd .d-n3{width:clamp(60px,9vw,120px);right:2%;bottom:5%}
+body.pd .d-spec{--r:16deg;width:clamp(64px,8vw,116px);right:5%;top:52%;transform:rotate(var(--r));animation:zweef 8s ease-in-out -2s infinite}
+body.pd .d-s1{--r:-12deg;width:clamp(110px,17vw,240px);left:-4%;bottom:-9%;transform:rotate(var(--r))}
+body.pd .d-s2{--r:14deg;width:clamp(110px,18vw,260px);right:-4%;top:-8%;transform:rotate(var(--r))}
+body.pd .d-piet{--r:8deg;width:clamp(110px,17vw,230px);right:-2%;top:3%;transform:rotate(var(--r));animation:zweef 9s ease-in-out -4s infinite}
+body.pd .d-schoen{--r:-4deg;width:clamp(170px,27vw,380px);left:-5%;bottom:-3%;transform:rotate(var(--r))}
+body.pd .d-n4{width:clamp(50px,7vw,100px);right:8%;bottom:7%}
+@media (prefers-reduced-motion:reduce){body.pd .deco{animation:none!important}}
+
+/* header */
+body.pd .hero.pd-hero{background:none;padding-block:clamp(20px,4vw,40px) 0}
+body.pd .pd-hero .boot{display:none}
+.pd-kern{display:grid;justify-items:center;text-align:center;gap:clamp(4px,1.4vw,14px);padding-block:clamp(28px,6vw,64px) clamp(36px,7vw,80px)}
+.pd-met-rij{display:flex;align-items:flex-end;justify-content:center;gap:clamp(10px,3vw,30px);flex-wrap:wrap}
+.pd-met{font-family:var(--f-pd);font-weight:500;font-size:clamp(1.5rem,4.4vw,2.6rem);text-transform:uppercase;letter-spacing:.08em;line-height:1;padding-bottom:.3em}
+.pd-tadaa{width:clamp(190px,34vw,380px);height:auto;transform:rotate(-4deg);filter:drop-shadow(0 8px 14px rgba(8,40,92,.35))}
+body.pd .pd-hero .pd-titel{font-family:var(--f-script);font-weight:400;font-size:clamp(3.4rem,18.5vw,11.5rem);line-height:1;color:var(--pd-navy);margin:0;letter-spacing:-.01em;text-shadow:none}
+.pd-datum{margin:0;font-family:var(--f-pd);font-weight:500;text-transform:uppercase;letter-spacing:.07em;font-size:clamp(1.8rem,6.4vw,3.8rem);line-height:1.05}
+.pd-sub{margin:clamp(6px,2vw,16px) 0 0;max-width:30ch;font-family:var(--f-pd);font-weight:500;text-transform:uppercase;letter-spacing:.04em;font-size:clamp(1.15rem,3.2vw,1.8rem);line-height:1.2}
+
+/* aftelklok als de tekstballon van het logo */
+body.pd .klok{background:none}
+body.pd .klok .label{font-family:var(--f-pd);font-weight:500;font-size:clamp(1.15rem,3.2vw,1.7rem);letter-spacing:.07em;color:var(--pd-navy)}
+body.pd .letter{background:var(--pd-geel);border:4px solid var(--pd-rood);border-radius:22px 22px 22px 6px;padding:16px 4px 12px;box-shadow:0 6px 0 rgba(217,32,39,.28),0 14px 24px rgba(8,40,92,.22);transform:rotate(-2deg)}
+body.pd .letter:nth-child(even){transform:rotate(1.6deg);border-radius:22px 22px 6px 22px}
+body.pd .letter::before{display:none}
+body.pd .letter .n{font-family:var(--f-pd);font-weight:700;color:var(--pd-navy);font-size:clamp(2.4rem,10vw,4.8rem)}
+body.pd .letter .e{font-family:var(--f-pd);font-weight:500;color:var(--pd-rood);font-size:clamp(.8rem,2.8vw,1.1rem);letter-spacing:.1em}
+body.pd .zover{font-family:var(--f-script);color:var(--pd-navy);font-size:clamp(2.4rem,9vw,4.4rem)}
+
+/* programma in de stijl van de poster */
+body.pd .programma{background:none;color:var(--pd-navy)}
+body.pd .pd-programma{padding-bottom:clamp(120px,19vw,240px)}
+body.pd .pd-h2{font-family:var(--f-script);font-weight:400;text-transform:none;letter-spacing:0;font-size:clamp(2.6rem,9vw,5rem);line-height:1.05;text-align:center;margin:0}
+.pd-intro{text-align:center;margin:10px auto 0;font-family:var(--f-pd);font-size:1.3rem;text-transform:uppercase;letter-spacing:.04em;max-width:40ch}
+.pd-stappen{list-style:none;margin:clamp(22px,4vw,40px) auto 0;padding:0;max-width:860px;display:grid;gap:0}
+.pd-stap{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(12px,3vw,26px);align-items:center;max-width:640px}
+.pd-stap.rechts{margin-left:auto}
+.pd-tijd{min-width:clamp(120px,21vw,190px);text-align:center;white-space:nowrap;font-family:var(--f-pd);font-weight:700;font-size:clamp(1.3rem,3.8vw,2rem);line-height:1;color:var(--pd-navy);background:var(--pd-geel);border:4px solid var(--pd-rood);border-radius:20px 20px 20px 4px;padding:12px 14px;transform:rotate(-2.5deg);box-shadow:0 5px 0 rgba(217,32,39,.28)}
+.pd-stap.rechts .pd-tijd{transform:rotate(2deg);border-radius:20px 20px 4px 20px}
+.pd-tekst p{margin:0;font-family:var(--f-pd);font-weight:500;font-size:clamp(1.35rem,3.7vw,2.2rem);line-height:1.12;text-transform:uppercase;letter-spacing:.03em;text-wrap:balance}
+.pd-tekst .rood{color:var(--pd-rood);font-weight:inherit}
+.pd-adres{display:block;margin-top:6px;font-family:var(--f-body);font-weight:700;font-size:1rem;letter-spacing:0;text-transform:none}
+.pd-pijl{list-style:none;display:flex;justify-content:center;color:var(--pd-rood);padding-block:6px}
+.pd-pijl svg{width:clamp(120px,24vw,210px);height:auto;display:block}
+.pd-pijl.terug svg{transform:scaleX(-1)}
+.pd-heledag{margin:clamp(28px,5vw,52px) auto 0;max-width:860px;display:flex;align-items:center;gap:14px 20px;flex-wrap:wrap;background:var(--pd-rood);color:#fff;border-radius:18px 18px 18px 4px;padding:16px 22px;transform:rotate(-.7deg);box-shadow:0 8px 0 rgba(26,34,82,.18)}
+.pd-heledag span{flex:none;font-family:var(--f-pd);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:1.05rem;background:var(--pd-geel);color:var(--pd-navy);padding:6px 12px;border-radius:8px}
+.pd-heledag p{margin:0;min-width:0;flex:1 1 220px;font-family:var(--f-pd);font-weight:500;text-transform:uppercase;letter-spacing:.04em;font-size:clamp(1.15rem,3vw,1.6rem);line-height:1.15}
+@media (max-width:560px){
+  .pd-stap{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;gap:12px}
+  .pd-stap.rechts{margin-left:0}
+  body.pd .d-sint{display:none}
+  body.pd .d-spec{display:none}body.pd .d-n1{opacity:.9;right:-20px}
+  body.pd .d-piet{width:96px;top:1%;right:-14px}
+  body.pd .d-s1{left:-30px}body.pd .d-s2{right:-30px}
+}
+
+/* gedeelde blokken in de Pietendag-kleuren */
+body.pd .fotos .rubriek{background:var(--pd-rood)}
+body.pd .car-spoor{background:#2f8fc7;box-shadow:0 10px 26px rgba(8,40,92,.28)}
+body.pd .car-stippen button::before{background:rgba(26,34,82,.35)}
+body.pd .car-stippen button[aria-current="true"]::before{background:var(--pd-navy)}
+body.pd .car-stippen button:hover::before{background:var(--pd-navy)}
+body.pd .car-pauze{border-color:rgba(26,34,82,.45);color:var(--pd-navy)}
+body.pd .car-pauze:hover{color:var(--pd-rood);border-color:var(--pd-rood)}
+body.pd .fotos .foto.leeg{border-color:rgba(26,34,82,.4);color:var(--pd-navy)}
+body.pd .facebook{background:var(--pd-rood)}
+body.pd .sponsors{background:#fff}
+body.pd footer{background:var(--pd-navy)}

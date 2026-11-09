@@ -16,6 +16,63 @@
     <rect x="44" y="160" width="32" height="10" rx="2" fill="#fbf7f0"/><rect x="40" y="250" width="40" height="10" rx="2" fill="#fbf7f0"/>
   </svg>`;
 
+  /* ---- Pietendag-versie (stijl van de poster met Circus Tadaa) ---- */
+  const rood = t => esc(t).replace(/\*([^*]+)\*/g, '<b class="rood">$1</b>');
+  const uur = t => /\d/.test(t || "") ? esc(t) + " uur" : "";
+  const deco = (naam, cls) => `<img class="deco ${cls}" src="/pietendag/${naam}.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" draggable="false">`;
+  const KRUL = `<svg viewBox="0 0 240 104" aria-hidden="true"><path d="M8 14C60 6 100 14 112 34C124 56 92 66 82 50C72 34 110 24 150 40C185 54 205 70 222 92" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="8 8"/><path d="M219 74L224 94L205 86" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const blokPd = {
+    hero: (B, C) => `
+<header class="hero pd-hero">
+  ${B.versiering !== false ? deco("sint", "d-sint") + deco("noot-1", "d-n1") + deco("noot-2", "d-n2") + deco("noot-3", "d-n3") + deco("speculaas", "d-spec") : ""}
+  <div class="wrap">
+    <div class="topbar">
+      ${C.logo ? `<a class="merk" href="/"><img src="${beeld(C.logo)}" alt="Sint in IJsselstein"></a>` : "<span></span>"}
+      ${C.facebook ? `<a class="fb-knop" href="${link(C.facebook)}" target="_blank" rel="noopener">${fbIcon} Facebook</a>` : ""}
+    </div>
+    <div class="pd-kern">
+      <div class="pd-met-rij">
+        ${B.met ? `<span class="pd-met">${esc(B.met)}</span>` : ""}
+        ${B.tadaa ? `<img class="pd-tadaa" src="${beeld(B.tadaa)}" alt="Circus Tadaa">` : ""}
+      </div>
+      <h1 class="pd-titel">${esc(B.titel)}</h1>
+      ${B.datum ? `<p class="pd-datum">${esc(B.datum)}</p>` : ""}
+      ${B.tekst ? `<p class="pd-sub">${esc(B.tekst)}</p>` : ""}
+    </div>
+  </div>
+</header>`,
+
+    aftelklok: B => `
+<section class="klok pd-klok" aria-label="Aftelklok">
+  ${deco("snoep-1", "d-s1")}${deco("snoep-2", "d-s2")}
+  <div class="wrap" id="klok">
+    <span class="label">${esc(B.tekst)}</span>
+    <div class="letters">
+      ${["dagen", "uren", "minuten", "seconden"].map(e => `<div class="letter"><div class="n" data-k="${e}">0</div><div class="e">${e}</div></div>`).join("")}
+    </div>
+  </div>
+</section>`,
+
+    programma: B => {
+      const lijst = B.onderdelen || [];
+      const stappen = lijst.map((o, i) => `${i ? `<li class="pd-pijl ${i % 2 ? "" : "terug"}" role="presentation" aria-hidden="true">${KRUL}</li>` : ""}
+      <li class="pd-stap ${i % 2 ? "rechts" : ""}">
+        <div class="pd-tijd">${o.tijd ? uur(o.tijd) : "Tijd volgt"}</div>
+        <div class="pd-tekst"><p>${rood(o.tekst)}</p>${o.info ? `<span class="pd-adres">${esc(o.info)}</span>` : ""}</div>
+      </li>`).join("");
+      return `
+<section class="programma pd-programma">
+  ${deco("piet", "d-piet")}${deco("schoen", "d-schoen")}${deco("noot-4", "d-n4")}
+  <div class="wrap">
+    <h2 class="pd-h2">${esc(B.titel)}</h2>
+    ${B.tekst ? `<p class="pd-intro">${esc(B.tekst)}</p>` : ""}
+    <ol class="pd-stappen">${stappen}</ol>
+    ${B.heledag ? `<div class="pd-heledag"><span>Hele dag</span><p>${esc(B.heledag)}</p></div>` : ""}
+  </div>
+</section>`;
+    }
+  };
+
   const blok = {
     nieuwsbalk: B => {
       const items = (B.items || []).map(x => typeof x === "string" ? x : x.tekst).filter(Boolean);
@@ -243,12 +300,20 @@
     if (!C || typeof C !== "object") return;
     const volgorde = (C.volgorde || BLOKKEN).filter(k => blok[k]);
     BLOKKEN.forEach((k, i) => { if (!volgorde.includes(k)) volgorde.splice(Math.min(i, volgorde.length), 0, k); });
-    let html = volgorde.filter(k => C[k] && C[k].toon).map(k => blok[k](C[k], C)).join("");
+    /* Pietendag: met de knop in het beheer, of automatisch vanaf een ingestelde datum en tijd. */
+    const vanaf = C.omschakelen ? new Date(C.omschakelen).getTime() : NaN;
+    const pd = !!C.pietendag && (C.modus === "pietendag" || (!isNaN(vanaf) && Date.now() >= vanaf));
+    document.body.classList.toggle("pd", pd);
+    document.title = pd ? "Pietendag in IJsselstein | Sint in IJsselstein" : "Sint in IJsselstein | Sinterklaasintocht IJsselstein";
+    const dataVan = k => (pd && C.pietendag[k]) ? C.pietendag[k] : C[k];
+    const bouw = k => (pd && blokPd[k]) ? blokPd[k] : blok[k];
+    let html = volgorde.filter(k => dataVan(k) && dataVan(k).toon).map(k => bouw(k)(dataVan(k), C)).join("");
     html += `<footer><div class="wrap"><span>© ${new Date().getFullYear()} ${esc(C.footer)} <span class="uitgezonden">· Uitgezonden vanuit IJsselstein</span></span>${C.facebook ? `<a href="${link(C.facebook)}" target="_blank" rel="noopener">Facebook</a>` : ""}</div></footer>`;
     document.getElementById("site").innerHTML = html;
-    pepernoten();
+    if (!pd) pepernoten();
     carrousel();
-    if (C.aftelklok?.toon) aftelklok(C.aftelklok); else clearInterval(timer);
+    const klok = dataVan("aftelklok");
+    if (klok?.toon) aftelklok(klok); else clearInterval(timer);
   }
 
   if (window.INHOUD) render(window.INHOUD);

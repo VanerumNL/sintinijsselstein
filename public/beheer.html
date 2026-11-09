@@ -46,8 +46,18 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 .tabs{display:none}
 .werk{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:24px;padding:20px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px));align-items:start}
-.voorbeeld{position:sticky;top:76px;height:calc(100vh - 96px);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 6px 24px rgba(20,33,63,.12)}
-.voorbeeld iframe{width:100%;height:100%;border:0;display:block}
+.voorbeeld{position:sticky;top:76px;height:calc(100vh - 96px);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 6px 24px rgba(20,33,63,.12);display:flex;flex-direction:column}
+.voorbeeld iframe{width:100%;flex:1;min-height:0;border:0;display:block}
+.vb-kop{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--lijn);flex-wrap:wrap;font-size:.88rem;color:var(--zacht);font-weight:700}
+.vb-kop button{border:0;border-radius:8px;padding:6px 12px;font-weight:800;background:#e7e3ef;cursor:pointer}
+.vb-kop button[aria-pressed="true"]{background:var(--paars);color:#fff}
+.modus{background:var(--kaart);border-radius:14px;padding:14px;display:grid;gap:12px;border:2px solid var(--lijn)}
+.modus.pd-aan{border-color:#45aedc;background:#eef8fd}
+.modus-rij{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.modus-nu{display:block;font-size:1.15rem}
+.modus .knop{background:var(--paars);color:#fff}
+.modus-uitleg{margin:0;color:var(--zacht);font-size:.92rem}
+.groep{margin:10px 2px 0;font-weight:800;color:var(--zacht);text-transform:uppercase;font-size:.78rem;letter-spacing:.1em}
 @media (max-width:960px){
   .werk{grid-template-columns:minmax(0,1fr)}
   .tabs{display:flex;gap:6px;padding:10px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
@@ -123,7 +133,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   </div>
   <div class="werk" data-tab="bewerken">
     <div class="formulier" id="formulier"></div>
-    <div class="voorbeeld"><iframe id="voorbeeld" title="Voorbeeld van de site" src="/?voorbeeld=1"></iframe></div>
+    <div class="voorbeeld"><div class="vb-kop"><span>Voorbeeld van:</span><button type="button" data-vb="intocht" aria-pressed="true">Intocht</button><button type="button" data-vb="pietendag" aria-pressed="false">Pietendag</button></div><iframe id="voorbeeld" title="Voorbeeld van de site" src="/?voorbeeld=1"></iframe></div>
   </div>
 </div>
 <div class="toast" id="toast" hidden></div>
@@ -164,6 +174,32 @@ const BLOKKEN = {
       { r: [{ k: "naam", label: "Naam" }, { k: "website", label: "Website" }] }
   ]}}
 };
+/* Pietendag-versie: eigen blokken, opgeslagen onder "pietendag" */
+Object.assign(BLOKKEN, {
+  pd_nieuwsbalk: { pad: "pietendag.nieuwsbalk", naam: "Nieuwsbalk (Pietendag)", velden: [{ k: "label", label: "Label (geel vak)" }],
+    lijst: { k: "items", item: "bericht", titel: "Berichten die voorbij lopen", kopveld: "tekst", nieuw: { tekst: "" }, velden: [{ k: "tekst", label: "Bericht" }] } },
+  pd_hero: { pad: "pietendag.hero", naam: "Header (Pietendag)", velden: [
+    { k: "met", label: "Klein woord boven de titel" },
+    { k: "tadaa", t: "logo", label: "Logo Circus Tadaa" },
+    { k: "titel", label: "Titel" }, { k: "datum", label: "Datum" },
+    { k: "tekst", t: "lang", label: "Tekst" },
+    { k: "versiering", t: "vink", label: "Versiering van de poster tonen (pepernoten, Sint, speculaas)" }
+  ]},
+  pd_aftelklok: { pad: "pietendag.aftelklok", naam: "Aftelklok (Pietendag)", velden: [
+    { r: [{ k: "datum", t: "datum", label: "Datum" }, { k: "tijd", t: "tijd", label: "Tijd" }] },
+    { k: "tekst", label: "Tekst boven de klok" },
+    { k: "klaarTekst", label: "Tekst als de tijd om is" }
+  ]},
+  pd_programma: { pad: "pietendag.programma", naam: "Programma (Pietendag)", velden: [
+    { k: "titel", label: "Titel" }, { k: "tekst", t: "lang", label: "Tekst (mag leeg)" },
+    { k: "heledag", t: "lang", label: "Rode balk onderaan, bijvoorbeeld wat de hele dag gebeurt (leeg = geen balk)" }
+  ], lijst: { k: "onderdelen", item: "onderdeel", titel: "Onderdelen van de dag", kopveld: "tekst", nieuw: { tekst: "", tijd: "", info: "" }, velden: [
+    { k: "tekst", t: "lang", label: "Tekst (zet *sterretjes* om woorden die rood moeten worden)" },
+    { k: "tijd", label: "Tijd, bijvoorbeeld 12:00 of 12:45 – 15:45 (leeg = Tijd volgt)" },
+    { k: "info", label: "Adres of uitleg (klein eronder)" }
+  ]}}
+});
+const PD_VOLGORDE = ["pd_nieuwsbalk", "pd_hero", "pd_aftelklok", "pd_programma"];
 const ALGEMEEN = [
   { k: "logo", t: "logo", label: "Logo" },
   { k: "facebook", label: "Adres van de Facebookpagina" },
@@ -226,8 +262,13 @@ $("#inlogform").addEventListener("submit", async e => {
 
 async function openEditor() {
   data = await api("/api/inhoud");
-  data.volgorde = (data.volgorde || Object.keys(BLOKKEN)).filter(k => BLOKKEN[k]);
-  Object.keys(BLOKKEN).forEach((k, i) => { if (!data.volgorde.includes(k)) data.volgorde.splice(Math.min(i, data.volgorde.length), 0, k); data[k] ||= { toon: false }; });
+  const gedeeld = Object.keys(BLOKKEN).filter(k => !BLOKKEN[k].pad);
+  data.volgorde = (data.volgorde || gedeeld).filter(k => gedeeld.includes(k));
+  gedeeld.forEach((k, i) => { if (!data.volgorde.includes(k)) data.volgorde.splice(Math.min(i, data.volgorde.length), 0, k); data[k] ||= { toon: false }; });
+  data.pietendag ||= {};
+  PD_VOLGORDE.forEach(k => { const [, sub] = BLOKKEN[k].pad.split("."); data.pietendag[sub] ||= { toon: true }; });
+  data.modus ||= "intocht"; data.omschakelen ||= "";
+  voorbeeldModus = null;
   opgeslagen = JSON.stringify(data);
   $("#inlog").hidden = true; $("#app").hidden = false;
   tekenFormulier(); stuurVoorbeeld();
@@ -247,34 +288,48 @@ function veldHtml(v, basis) {
         ${waarde ? `<button class="knop rood klein" type="button" data-wis="${pad}">Weghalen</button>` : ""}
       </div></div>`;
   if (v.t === "vink") return `<label class="schakel" style="justify-self:start"><input type="checkbox" id="${id}" data-vink="${pad}" ${waarde !== false && waarde !== "" ? "checked" : ""}>${v.label}</label>`;
-  const type = v.t === "datum" ? "date" : v.t === "tijd" ? "time" : "text";
+  const type = v.t === "datum" ? "date" : v.t === "tijd" ? "time" : v.t === "datumtijd" ? "datetime-local" : "text";
   if (v.t === "lang") return `<div class="veld"><label for="${id}">${v.label}</label><textarea id="${id}" data-pad="${pad}">${esc(waarde)}</textarea></div>`;
   return `<div class="veld"><label for="${id}">${v.label}</label><input type="${type}" id="${id}" data-pad="${pad}" value="${esc(waarde)}"></div>`;
 }
 function lijstHtml(k, L) {
-  const items = data[k][L.k] ||= [];
+  const basis = BLOKKEN[k].pad || k;
+  const items = haal(basis)[L.k] ||= [];
   return `<div class="veld"><span class="lbl">${L.titel}</span>
     <div class="lijst">${items.map((it, i) => `
-      <div class="item">
+      <div class="item" data-kop="${L.kopveld}">
         <div class="item-kop"><strong>${esc(it[L.kopveld]) || (L.item[0].toUpperCase() + L.item.slice(1) + " " + (i + 1))}</strong>
-          <button class="icoon" type="button" title="Omhoog" aria-label="Omhoog" data-item-op="${k}.${L.k}.${i}" ${i === 0 ? "disabled" : ""}>↑</button>
-          <button class="icoon" type="button" title="Omlaag" aria-label="Omlaag" data-item-neer="${k}.${L.k}.${i}" ${i === items.length - 1 ? "disabled" : ""}>↓</button>
-          <button class="icoon" type="button" title="Verwijderen" aria-label="Verwijderen" data-item-weg="${k}.${L.k}.${i}">✕</button>
+          <button class="icoon" type="button" title="Omhoog" aria-label="Omhoog" data-item-op="${basis}.${L.k}.${i}" ${i === 0 ? "disabled" : ""}>↑</button>
+          <button class="icoon" type="button" title="Omlaag" aria-label="Omlaag" data-item-neer="${basis}.${L.k}.${i}" ${i === items.length - 1 ? "disabled" : ""}>↓</button>
+          <button class="icoon" type="button" title="Verwijderen" aria-label="Verwijderen" data-item-weg="${basis}.${L.k}.${i}">✕</button>
         </div>
-        ${L.velden.map(v => veldHtml(v, `${k}.${L.k}.${i}`)).join("")}
+        ${L.velden.map(v => veldHtml(v, `${basis}.${L.k}.${i}`)).join("")}
       </div>`).join("")}
     </div>
     ${L.meerdere
-      ? `<label class="knop hoofd klein bestand" style="justify-self:start">+ Foto's toevoegen (je kunt er meerdere kiezen)<input type="file" accept="image/*" multiple data-multi="${k}.${L.k}"></label>`
+      ? `<label class="knop hoofd klein bestand" style="justify-self:start">+ Foto's toevoegen (je kunt er meerdere kiezen)<input type="file" accept="image/*" multiple data-multi="${basis}.${L.k}"></label>`
       : `<button class="knop licht klein" type="button" data-item-erbij="${k}" style="justify-self:start;color:var(--paars)">+ ${L.item} toevoegen</button>`}</div>`;
 }
 function tekenFormulier() {
   const scroll = window.scrollY;
-  let html = `<section class="blok ${open.has("algemeen") ? "open" : ""}" data-blok="algemeen">
+  const vanaf = data.omschakelen ? Date.parse(data.omschakelen) : NaN;
+  const auto = data.modus !== "pietendag" && !isNaN(vanaf) && Date.now() >= vanaf;
+  const pdAan = data.modus === "pietendag" || auto;
+  let html = `<section class="modus ${pdAan ? "pd-aan" : ""}">
+    <div class="modus-rij">
+      <div><span class="lbl">Nu online</span><strong class="modus-nu">${pdAan ? "De Pietendag-versie" : "De intocht-versie"}${auto ? " (automatisch overgeschakeld)" : ""}</strong></div>
+      <button class="knop" type="button" id="modusknop">${pdAan ? "Terug naar de intocht-versie" : "Zet de Pietendag-versie online"}</button>
+    </div>
+    <p class="modus-uitleg">${pdAan ? "De site, de aftelklok en de kleuren staan nu op Pietendag." : "Na de intocht klik je hier. De site, de aftelklok en de kleuren veranderen dan meteen naar Pietendag. Klaar om te kijken? Open de Pietendag-blokken hieronder en kies bij het voorbeeld Pietendag."}</p>
+    ${veldHtml({ k: "omschakelen", t: "datumtijd", label: "Of laat de site vanzelf overschakelen op (leeg = alleen met de knop)" }, "")}
+  </section>
+  <div class="groep">Algemeen</div>
+  <section class="blok ${open.has("algemeen") ? "open" : ""}" data-blok="algemeen">
     <div class="blok-kop"><button class="titel" type="button" data-open="algemeen">Algemeen</button></div>
     <div class="blok-body">${ALGEMEEN.map(v => veldHtml(v, "")).join("")}</div></section>`;
   data.volgorde.forEach((k, i) => {
     const B = BLOKKEN[k], aan = !!data[k].toon;
+    if (i === 0) html += `<div class="groep">Intocht-versie (foto's, Facebook en sponsors zie je ook bij Pietendag)</div>`;
     html += `<section class="blok ${open.has(k) ? "open" : ""} ${aan ? "" : "uit"}" data-blok="${k}">
       <div class="blok-kop">
         <button class="titel" type="button" data-open="${k}">${B.naam}</button>
@@ -283,6 +338,17 @@ function tekenFormulier() {
         <button class="icoon" type="button" title="Blok omlaag" aria-label="${B.naam} omlaag" data-blok-neer="${i}" ${i === data.volgorde.length - 1 ? "disabled" : ""}>↓</button>
       </div>
       <div class="blok-body">${B.velden.map(v => veldHtml(v, k)).join("")}${B.lijst ? lijstHtml(k, B.lijst) : ""}</div>
+    </section>`;
+  });
+  html += `<div class="groep">Pietendag-versie</div>`;
+  PD_VOLGORDE.forEach(k => {
+    const B = BLOKKEN[k], obj = haal(B.pad), aan = !!obj.toon;
+    html += `<section class="blok ${open.has(k) ? "open" : ""} ${aan ? "" : "uit"}" data-blok="${k}">
+      <div class="blok-kop">
+        <button class="titel" type="button" data-open="${k}">${B.naam}</button>
+        <label class="schakel" title="Blok tonen op de site"><input type="checkbox" data-toon="${B.pad}" ${aan ? "checked" : ""} aria-label="${B.naam} tonen">${aan ? "Aan" : "Uit"}</label>
+      </div>
+      <div class="blok-body">${B.velden.map(v => veldHtml(v, B.pad)).join("")}${B.lijst ? lijstHtml(k, B.lijst) : ""}</div>
     </section>`;
   });
   html += `<div class="extra">
@@ -298,11 +364,23 @@ function tekenFormulier() {
 }
 
 /* ---------- Wijzigingen ---------- */
-let voorbeeldTimer;
+let voorbeeldTimer, voorbeeldModus = null;
+function zetVoorbeeldKnoppen() {
+  const nu = voorbeeldModus || (data?.modus === "pietendag" ? "pietendag" : "intocht");
+  document.querySelectorAll("[data-vb]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.vb === nu)));
+}
 function stuurVoorbeeld() {
   clearTimeout(voorbeeldTimer);
-  voorbeeldTimer = setTimeout(() => $("#voorbeeld").contentWindow?.postMessage({ type: "inhoud", inhoud: data }, location.origin), 200);
+  voorbeeldTimer = setTimeout(() => {
+    const inhoud = voorbeeldModus ? { ...data, modus: voorbeeldModus, omschakelen: "" } : data;
+    $("#voorbeeld").contentWindow?.postMessage({ type: "inhoud", inhoud }, location.origin);
+    zetVoorbeeldKnoppen();
+  }, 200);
 }
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-vb]"); if (!b) return;
+  voorbeeldModus = b.dataset.vb; stuurVoorbeeld();
+});
 function gewijzigd() {
   const vuil = JSON.stringify(data) !== opgeslagen;
   $("#opslaan").disabled = !vuil;
@@ -318,19 +396,28 @@ $("#formulier").addEventListener("input", e => {
   if (!pad) return;
   zet(pad, e.target.value);
   const item = e.target.closest(".item");
-  if (item) { const kop = item.querySelector(".item-kop strong"); const l = pad.split("."); const L = BLOKKEN[l[0]]?.lijst; if (L && l[3] === L.kopveld && e.target.value) kop.textContent = e.target.value; }
+  if (item && pad.endsWith("." + item.dataset.kop) && e.target.value) item.querySelector(".item-kop strong").textContent = e.target.value;
 });
 
 function wissel(arr, a, b) { [arr[a], arr[b]] = [arr[b], arr[a]]; }
 $("#formulier").addEventListener("click", async e => {
   const t = e.target.closest("button"); if (!t) return;
   const d = t.dataset;
-  if (d.open) { open.has(d.open) ? open.delete(d.open) : open.add(d.open); t.closest(".blok").classList.toggle("open"); return; }
+  if (d.open) {
+    open.has(d.open) ? open.delete(d.open) : open.add(d.open); t.closest(".blok").classList.toggle("open");
+    if (open.has(d.open) && d.open !== "algemeen") {
+      if (d.open.startsWith("pd_")) voorbeeldModus = "pietendag";
+      else if (["nieuwsbalk", "hero", "aftelklok", "programma"].includes(d.open)) voorbeeldModus = "intocht";
+      stuurVoorbeeld();
+    }
+    return;
+  }
+  if (t.id === "modusknop") return wisselModus(t);
   if (d.blokOp) { wissel(data.volgorde, +d.blokOp, +d.blokOp - 1); }
   else if (d.blokNeer) { wissel(data.volgorde, +d.blokNeer, +d.blokNeer + 1); }
-  else if (d.itemErbij) { const L = BLOKKEN[d.itemErbij].lijst; data[d.itemErbij][L.k].push({ ...L.nieuw }); }
+  else if (d.itemErbij) { const L = BLOKKEN[d.itemErbij].lijst; haal(BLOKKEN[d.itemErbij].pad || d.itemErbij)[L.k].push({ ...L.nieuw }); }
   else if (d.itemOp || d.itemNeer || d.itemWeg) {
-    const [k, l, i] = (d.itemOp || d.itemNeer || d.itemWeg).split("."), arr = data[k][l], n = +i;
+    const pad = d.itemOp || d.itemNeer || d.itemWeg, cut = pad.lastIndexOf("."), arr = haal(pad.slice(0, cut)), n = +pad.slice(cut + 1);
     if (d.itemOp) wissel(arr, n, n - 1);
     else if (d.itemNeer) wissel(arr, n, n + 1);
     else arr.splice(n, 1);
@@ -344,19 +431,19 @@ $("#formulier").addEventListener("click", async e => {
 $("#formulier").addEventListener("change", async e => {
   const t = e.target;
   if (t.dataset.vink) { zet(t.dataset.vink, t.checked); return; }
-  if (t.dataset.toon) { data[t.dataset.toon].toon = t.checked; tekenFormulier(); gewijzigd(); return; }
+  if (t.dataset.toon) { haal(t.dataset.toon).toon = t.checked; tekenFormulier(); gewijzigd(); return; }
   if (t.dataset.multi && t.files?.length) {
-    const [k, l] = t.dataset.multi.split("."), bestanden = [...t.files], label = t.closest("label");
+    const lijstPad = t.dataset.multi, bestanden = [...t.files], label = t.closest("label");
     let gelukt = 0, mislukt = 0, laatste = "";
     for (const [i, f] of bestanden.entries()) {
       label.firstChild.textContent = `Bezig met uploaden (${i + 1} van ${bestanden.length})…`;
       try {
         const blob = await verklein(f, 1800, false);
         const r = await api("/api/upload", { method: "POST", headers: { "content-type": blob.type }, body: blob });
-        data[k][l].push({ bestand: r.url, onderschrift: "" }); gelukt++;
+        haal(lijstPad).push({ bestand: r.url, onderschrift: "" }); gelukt++;
       } catch (err) { mislukt++; laatste = err.message; }
     }
-    open.add(k); tekenFormulier(); gewijzigd();
+    tekenFormulier(); gewijzigd();
     toast(mislukt ? `${gelukt} geüpload, ${mislukt} mislukt: ${laatste}` : `${gelukt} foto${gelukt === 1 ? "" : "'s"} toegevoegd. Vergeet niet op te slaan.`);
     return;
   }
@@ -390,14 +477,36 @@ async function verklein(bestand, max, alsPng) {
   return new Promise(ok => c.toBlob(ok, type, 0.84));
 }
 
-$("#opslaan").addEventListener("click", async () => {
+async function slaOp() {
   const knop = $("#opslaan"); knop.disabled = true; knop.textContent = "Opslaan…";
+  let gelukt = false;
   try {
     await api("/api/inhoud", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(data) });
-    opgeslagen = JSON.stringify(data); toast("Opgeslagen. De site is bijgewerkt.");
+    opgeslagen = JSON.stringify(data); gelukt = true; toast("Opgeslagen. De site is bijgewerkt.");
   } catch (err) { toast(err.message); }
   knop.textContent = "Opslaan"; gewijzigd();
-});
+  return gelukt;
+}
+$("#opslaan").addEventListener("click", slaOp);
+
+/* De knop die de hele site omzet naar Pietendag (en terug). Eerst bevestigen, dan meteen online. */
+let modusBevestig = false;
+async function wisselModus(knop) {
+  const naarPd = data.modus !== "pietendag" && !(data.omschakelen && Date.now() >= Date.parse(data.omschakelen));
+  if (!modusBevestig) {
+    modusBevestig = true;
+    knop.textContent = "Zeker weten? De site verandert meteen. Klik nog een keer";
+    setTimeout(() => { if (modusBevestig) { modusBevestig = false; tekenFormulier(); } }, 5000);
+    return;
+  }
+  modusBevestig = false;
+  const vorige = { modus: data.modus, omschakelen: data.omschakelen };
+  data.modus = naarPd ? "pietendag" : "intocht";
+  if (!naarPd) data.omschakelen = "";
+  if (await slaOp()) { voorbeeldModus = null; toast(naarPd ? "De site staat nu op Pietendag" : "De site staat weer op de intocht-versie"); }
+  else Object.assign(data, vorige);
+  tekenFormulier(); gewijzigd();
+}
 
 let vorigeBevestig = false;
 async function vorigeVersie(knop) {
