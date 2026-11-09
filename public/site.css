@@ -358,3 +358,16 @@ body.pd .pd-hero .pd-kern{width:100%}
 @media (min-width:900px){body.pd .pd-hero .pd-kern{margin-top:-78px}}
 @font-face{font-family:"Rubik";font-weight:800;src:url(/fonts/rubik-800.woff2) format("woff2");font-display:swap}
 .hero:not(.pd-hero) h1{font-family:"Rubik","Arial Rounded MT Bold","Trebuchet MS",sans-serif;font-weight:800;font-size:clamp(2.9rem,10.5vw,6.8rem);line-height:1.02;letter-spacing:-.015em}
+
+/* Intocht: pepernoten en snoep in het eerste blok */
+.hero:not(.pd-hero) .deco{position:absolute;z-index:1;pointer-events:none;user-select:none;height:auto;max-width:none}
+.hero:not(.pd-hero)>.wrap{position:relative;z-index:2}
+.hero:not(.pd-hero) .d-sp2{--r:6deg;width:clamp(70px,9vw,130px);right:0;bottom:6%;animation:drijf 8s ease-in-out -3s infinite}
+.hero:not(.pd-hero) .d-ng{width:clamp(46px,5.5vw,84px);right:0;top:24%;animation:drijf 9s ease-in-out -2s infinite}
+.hero:not(.pd-hero) .d-s2{--r:14deg;width:clamp(90px,13vw,190px);right:-2%;top:-5%;animation:zweef 11s ease-in-out -6s infinite}
+.hero:not(.pd-hero) .d-n1{width:clamp(38px,5vw,72px);right:14%;bottom:12%;animation:rol 14s linear infinite}
+.hero:not(.pd-hero) .d-n3{width:clamp(34px,4.5vw,64px);left:46%;bottom:7%;animation:rol 16s linear -3s infinite}
+.hero:not(.pd-hero) .d-n5{width:clamp(30px,4vw,56px);right:26%;top:12%;animation:rol 11s linear -4s infinite reverse}
+.hero:not(.pd-hero) .pd-regen{z-index:1}
+@media (max-width:640px){.hero:not(.pd-hero) .d-sp2,.hero:not(.pd-hero) .d-n3{display:none}.hero:not(.pd-hero) .d-ng{width:44px;top:30%}.hero:not(.pd-hero) .d-s2{width:84px}}
+@media (prefers-reduced-motion:reduce){.hero .deco{animation:none!important}}

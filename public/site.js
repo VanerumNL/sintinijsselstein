@@ -23,7 +23,7 @@
   const KRUL = `<svg viewBox="0 0 240 104" aria-hidden="true"><path d="M8 14C60 6 100 14 112 34C124 56 92 66 82 50C72 34 110 24 150 40C185 54 205 70 222 92" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="8 8"/><path d="M219 74L224 94L205 86" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   /* Zachtjes vallende pepernoten en snoepjes over de hele Pietendag-pagina. */
   function lekkerRegen() {
-    const hero = document.querySelector(".pd-hero"); if (!hero || hero.querySelector(".pd-regen") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const hero = document.querySelector(".hero"); if (!hero || hero.querySelector(".pd-regen") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const d = document.createElement("div"); d.className = "pd-regen"; d.setAttribute("aria-hidden", "true");
     const soorten = ["noot-5", "noot-6", "noot-1", "noot-2", "noot-3", "noot-4"];
     for (let i = 0; i < 16; i++) {
@@ -108,6 +108,7 @@
 
     hero: (B, C) => `
 <header class="hero" style="${B.foto ? `background-image:linear-gradient(180deg,rgba(20,33,63,.55) 0%,rgba(20,33,63,.45) 45%,rgba(20,33,63,.92) 100%),url('${beeld(B.foto)}')` : ""}">
+  ${deco("speculaas-2", "d-sp2")}${deco("noten-groep", "d-ng")}${deco("snoep-2", "d-s2")}${deco("noot-1", "d-n1")}${deco("noot-3", "d-n3")}${deco("noot-5", "d-n5")}
   <div class="wrap">
     <div class="topbar">
       ${C.logo ? `<a class="merk" href="/"><img src="${beeld(C.logo)}" alt="Sint in IJsselstein"></a>` : "<span></span>"}
@@ -331,7 +332,7 @@
     let html = volgorde.filter(k => dataVan(k) && dataVan(k).toon).map(k => bouw(k)(dataVan(k), C)).join("");
     html += `<footer><div class="wrap"><span>© ${new Date().getFullYear()} ${esc(C.footer)} <span class="uitgezonden">· Uitgezonden vanuit IJsselstein</span></span>${C.facebook ? `<a href="${link(C.facebook)}" target="_blank" rel="noopener">Facebook</a>` : ""}</div></footer>`;
     document.getElementById("site").innerHTML = html;
-    if (!pd) pepernoten(); else lekkerRegen();
+    lekkerRegen();
     carrousel();
     const klok = dataVan("aftelklok");
     if (klok?.toon) aftelklok(klok); else clearInterval(timer);
