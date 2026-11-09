@@ -320,3 +320,21 @@ body.pd .pd-programma .d-n5{right:auto;left:5%;top:30%}
   body.pd .pd-hero .pd-titel{font-size:21vw}
   .pd-regen img:nth-child(n+9){display:none}
 }
+
+/* ---- Pietendag: duidelijk gescheiden blokken, kop hoger op de pagina ---- */
+body.pd{background:var(--pd-navy)}
+body.pd::before{display:none}
+body.pd .hero.pd-hero{background:radial-gradient(120% 100% at 50% 30%,#7fd6f5 0%,#4db4e0 55%,#3a9fd2 100%);padding-block:clamp(14px,2.5vw,26px) clamp(34px,5vw,60px)}
+.pd-kern{padding-block:clamp(0px,.5vw,6px) clamp(8px,2vw,20px)}
+body.pd .pd-hero .topbar{margin-bottom:0}
+body.pd .pd-klok{background:var(--pd-navy);padding-block:clamp(56px,9vw,96px) clamp(70px,10vw,110px)}
+body.pd .pd-klok .label{color:#fff;-webkit-text-stroke:.5px #fff}
+body.pd .pd-klok .zover{color:var(--pd-geel)}
+body.pd .pd-programma{background:#fff6d8;padding-top:clamp(56px,9vw,96px)}
+body.pd .fotos{background:linear-gradient(180deg,#4db4e0,#3a9fd2);padding-block:clamp(56px,9vw,96px)}
+body.pd .fotos h2{color:#fff}
+body.pd .pd-hero::after,body.pd .pd-klok::after,body.pd .pd-programma::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:clamp(26px,4.5vw,56px);z-index:1;background-size:100% 100%;background-repeat:no-repeat;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 34C200 6 420 62 720 32S1220 4 1440 34V60H0Z' fill='%231a2252'/%3E%3C/svg%3E")}
+body.pd .pd-klok::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 34C200 6 420 62 720 32S1220 4 1440 34V60H0Z' fill='%23fff6d8'/%3E%3C/svg%3E")}
+body.pd .pd-programma::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 34C200 6 420 62 720 32S1220 4 1440 34V60H0Z' fill='%234db4e0'/%3E%3C/svg%3E")}
+body.pd .pd-programma{padding-bottom:clamp(90px,14vw,170px)}
+@media (max-width:560px){body.pd .hero.pd-hero{padding-top:10px}}
