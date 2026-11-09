@@ -25,11 +25,11 @@
   function lekkerRegen() {
     if (document.querySelector(".pd-regen") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const d = document.createElement("div"); d.className = "pd-regen"; d.setAttribute("aria-hidden", "true");
-    const soorten = ["noot-5", "noot-6", "noot-1", "noot-2", "noot-3", "noot-4", "snoep-hoop"];
+    const soorten = ["noot-5", "noot-6", "noot-1", "noot-2", "noot-3", "noot-4"];
     for (let i = 0; i < 16; i++) {
       const im = document.createElement("img"); const n = soorten[i % soorten.length];
       im.src = "/pietendag/" + n + ".webp"; im.alt = ""; im.draggable = false;
-      const kl = n === "snoep-hoop" ? 26 + Math.random() * 14 : 22 + Math.random() * 30;
+      const kl = 22 + Math.random() * 30;
       im.style.cssText = `left:${(i * 6.4 + Math.random() * 4).toFixed(1)}%;width:${kl.toFixed(0)}px;animation-duration:${(16 + Math.random() * 14).toFixed(1)}s,${(3 + Math.random() * 4).toFixed(1)}s;animation-delay:${(-Math.random() * 30).toFixed(1)}s,${(-Math.random() * 5).toFixed(1)}s`;
       d.appendChild(im);
     }
@@ -45,7 +45,7 @@
         : `<h1 class="pd-titel">${esc(titel)}</h1>`;
       return `
 <header class="hero pd-hero">
-  ${B.versiering !== false ? deco("taaitaai", "d-tt") + deco("speculaas-2", "d-sp2") + deco("noten-groep", "d-ng") + deco("noot-1", "d-n1") + deco("noot-2", "d-n2") + deco("noot-3", "d-n3") + deco("noot-5", "d-n5") + deco("snoep-hoop", "d-sh") + deco("snoep-2", "d-s2") : ""}
+  ${B.versiering !== false ? deco("taaitaai", "d-tt") + deco("speculaas-2", "d-sp2") + deco("noten-groep", "d-ng") + deco("noot-1", "d-n1") + deco("noot-2", "d-n2") + deco("noot-3", "d-n3") + deco("noot-5", "d-n5") + deco("snoep-2", "d-s2") : ""}
   <div class="wrap">
     <div class="topbar">
       ${C.logo ? `<a class="merk" href="/"><img src="${beeld(C.logo)}" alt="Sint in IJsselstein"></a>` : "<span></span>"}
