@@ -45,7 +45,6 @@
         : `<h1 class="pd-titel">${esc(titel)}</h1>`;
       return `
 <header class="hero pd-hero">
-  ${B.skyline === false ? "" : `<div class="skyline" aria-hidden="true"></div>`}
   ${B.versiering !== false ? deco("taaitaai", "d-tt") + deco("speculaas-2", "d-sp2") + deco("noten-groep", "d-ng") + deco("noot-1", "d-n1") + deco("noot-2", "d-n2") + deco("noot-3", "d-n3") + deco("noot-5", "d-n5") + deco("snoep-2", "d-s2") : ""}
   <div class="wrap">
     <div class="topbar">
@@ -121,7 +120,6 @@
       ${B.datumGroot ? `<div class="onderbalk">${B.datumTekst ? `<span class="ob-label">${esc(B.datumTekst)}</span>` : ""}<span class="ob-tekst">${esc(B.datumGroot)}</span></div>` : ""}
     </div>
   </div>
-  ${B.toren === false ? "" : `<div class="skyline" aria-hidden="true"></div><span class="mast-tekst">Uitgezonden vanuit IJsselstein</span>`}
   <svg class="boot" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
     <path d="M0 70 Q150 40 300 70 T600 70 T900 70 T1200 70 V120 H0Z" fill="#1d2d55"/>
     <path d="M0 90 Q150 64 300 90 T600 90 T900 90 T1200 90 V120 H0Z" fill="#253a6e" opacity=".6"/>
@@ -334,6 +332,12 @@
     html += `<footer><div class="wrap"><span>© ${new Date().getFullYear()} ${esc(C.footer)} <span class="uitgezonden">· Uitgezonden vanuit IJsselstein</span></span>${C.facebook ? `<a href="${link(C.facebook)}" target="_blank" rel="noopener">Facebook</a>` : ""}</div></footer>`;
     document.getElementById("site").innerHTML = html;
     if (!pd) pepernoten(); else lekkerRegen();
+    /* Lichte IJsselstein-skyline onderin elk blok (kleur volgt de tekstkleur van het blok). */
+    const hero = pd ? C.pietendag?.hero : C.hero;
+    if ((pd ? hero?.skyline : hero?.toren) !== false)
+      document.querySelectorAll("#site > header, #site > section").forEach(el => {
+        const d = document.createElement("div"); d.className = "sk-bg"; d.setAttribute("aria-hidden", "true"); el.prepend(d);
+      });
     carrousel();
     const klok = dataVan("aftelklok");
     if (klok?.toon) aftelklok(klok); else clearInterval(timer);
