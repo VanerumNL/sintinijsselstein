@@ -23,7 +23,7 @@
   const KRUL = `<svg viewBox="0 0 240 104" aria-hidden="true"><path d="M8 14C60 6 100 14 112 34C124 56 92 66 82 50C72 34 110 24 150 40C185 54 205 70 222 92" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="8 8"/><path d="M219 74L224 94L205 86" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   /* Zachtjes vallende pepernoten en snoepjes over de hele Pietendag-pagina. */
   function lekkerRegen() {
-    if (document.querySelector(".pd-regen") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const hero = document.querySelector(".pd-hero"); if (!hero || hero.querySelector(".pd-regen") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const d = document.createElement("div"); d.className = "pd-regen"; d.setAttribute("aria-hidden", "true");
     const soorten = ["noot-5", "noot-6", "noot-1", "noot-2", "noot-3", "noot-4"];
     for (let i = 0; i < 16; i++) {
@@ -33,7 +33,7 @@
       im.style.cssText = `left:${(i * 6.4 + Math.random() * 4).toFixed(1)}%;width:${kl.toFixed(0)}px;animation-duration:${(16 + Math.random() * 14).toFixed(1)}s,${(3 + Math.random() * 4).toFixed(1)}s;animation-delay:${(-Math.random() * 30).toFixed(1)}s,${(-Math.random() * 5).toFixed(1)}s`;
       d.appendChild(im);
     }
-    document.body.appendChild(d);
+    hero.appendChild(d);
   }
   const blokPd = {
     hero: (B, C) => {
