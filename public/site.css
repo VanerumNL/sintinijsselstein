@@ -347,3 +347,12 @@ body.pd .pd-hero .pd-titel{font-size:clamp(3.8rem,17vw,12.5rem)}
 body.pd .pd-ballon{width:clamp(120px,21vw,250px);margin:0 0 -.2rem 0;align-self:flex-end}
 body.pd .pd-titelblok{width:max-content}
 @media (max-width:560px){body.pd .pd-hero .pd-titel{font-size:22vw}body.pd .pd-ballon{width:46vw;align-self:flex-end;margin-right:2%}}
+
+/* Pietendag hoger: titel en datum staan bovenaan in beeld */
+body.pd .hero.pd-hero{min-height:0}
+body.pd .pd-hero .pd-kern{flex:none;justify-content:center;align-content:start;padding-top:0}
+body.pd .pd-hero .pd-titel{font-size:clamp(3.8rem,min(17vw,19vh),12rem)}
+body.pd .pd-hero .topbar{padding-block:0}
+@media (max-width:560px){body.pd .pd-hero .pd-titel{font-size:min(22vw,17vh)}}
+body.pd .pd-hero .pd-kern{width:100%}
+@media (min-width:900px){body.pd .pd-hero .pd-kern{margin-top:-78px}}
