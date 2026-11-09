@@ -45,7 +45,7 @@
         : `<h1 class="pd-titel">${esc(titel)}</h1>`;
       return `
 <header class="hero pd-hero">
-  ${B.versiering !== false ? deco("taaitaai", "d-tt") + deco("speculaas-2", "d-sp2") + deco("noten-groep", "d-ng") + deco("noot-1", "d-n1") + deco("noot-2", "d-n2") + deco("noot-3", "d-n3") + deco("noot-5", "d-n5") + deco("snoep-2", "d-s2") : ""}
+  ${B.versiering !== false ? deco("taaitaai", "d-tt") + deco("speculaas-2", "d-sp2") + deco("noten-groep", "d-ng") + deco("noot-1", "d-n1") + deco("noot-2", "d-n2") + deco("noot-3", "d-n3") + deco("noot-5", "d-n5") : ""}
   <div class="wrap">
     <div class="topbar">
       ${C.logo ? `<a class="merk" href="/"><img src="${beeld(C.logo)}" alt="Sint in IJsselstein"></a>` : "<span></span>"}
@@ -108,7 +108,7 @@
 
     hero: (B, C) => `
 <header class="hero" style="${B.foto ? `background-image:linear-gradient(180deg,rgba(20,33,63,.55) 0%,rgba(20,33,63,.45) 45%,rgba(20,33,63,.92) 100%),url('${beeld(B.foto)}')` : ""}">
-  ${deco("speculaas-2", "d-sp2")}${deco("noten-groep", "d-ng")}${deco("snoep-2", "d-s2")}${deco("noot-1", "d-n1")}${deco("noot-3", "d-n3")}${deco("noot-5", "d-n5")}
+  ${deco("speculaas-2", "d-sp2")}${deco("noten-groep", "d-ng")}${deco("noot-1", "d-n1")}${deco("noot-3", "d-n3")}${deco("noot-5", "d-n5")}
   <div class="wrap">
     <div class="topbar">
       ${C.logo ? `<a class="merk" href="/"><img src="${beeld(C.logo)}" alt="Sint in IJsselstein"></a>` : "<span></span>"}
