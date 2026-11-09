@@ -21,30 +21,51 @@
   const uur = t => /\d/.test(t || "") ? esc(t) + " uur" : "";
   const deco = (naam, cls) => `<img class="deco ${cls}" src="/pietendag/${naam}.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" draggable="false">`;
   const KRUL = `<svg viewBox="0 0 240 104" aria-hidden="true"><path d="M8 14C60 6 100 14 112 34C124 56 92 66 82 50C72 34 110 24 150 40C185 54 205 70 222 92" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="8 8"/><path d="M219 74L224 94L205 86" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  /* Zachtjes vallende pepernoten en snoepjes over de hele Pietendag-pagina. */
+  function lekkerRegen() {
+    if (document.querySelector(".pd-regen") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const d = document.createElement("div"); d.className = "pd-regen"; d.setAttribute("aria-hidden", "true");
+    const soorten = ["noot-5", "noot-6", "noot-1", "noot-2", "noot-3", "noot-4", "snoep-hoop"];
+    for (let i = 0; i < 16; i++) {
+      const im = document.createElement("img"); const n = soorten[i % soorten.length];
+      im.src = "/pietendag/" + n + ".webp"; im.alt = ""; im.draggable = false;
+      const kl = n === "snoep-hoop" ? 26 + Math.random() * 14 : 22 + Math.random() * 30;
+      im.style.cssText = `left:${(i * 6.4 + Math.random() * 4).toFixed(1)}%;width:${kl.toFixed(0)}px;animation-duration:${(16 + Math.random() * 14).toFixed(1)}s,${(3 + Math.random() * 4).toFixed(1)}s;animation-delay:${(-Math.random() * 30).toFixed(1)}s,${(-Math.random() * 5).toFixed(1)}s`;
+      d.appendChild(im);
+    }
+    document.body.appendChild(d);
+  }
   const blokPd = {
-    hero: (B, C) => `
+    hero: (B, C) => {
+      const letter = B.letter === undefined ? "/pietendag/chocolade-p.webp" : B.letter;
+      const titel = B.titel || "";
+      const metP = letter && /^p/i.test(titel);
+      const kop = metP
+        ? `<h1 class="pd-titel" aria-label="${esc(titel)}"><img class="pd-p" src="${beeld(letter)}" alt="" aria-hidden="true"><span aria-hidden="true">${esc(titel.slice(1))}</span></h1>`
+        : `<h1 class="pd-titel">${esc(titel)}</h1>`;
+      return `
 <header class="hero pd-hero">
-  ${B.versiering !== false ? deco("sint", "d-sint") + deco("noot-1", "d-n1") + deco("noot-2", "d-n2") + deco("noot-3", "d-n3") + deco("speculaas", "d-spec") : ""}
+  ${B.versiering !== false ? deco("taaitaai", "d-tt") + deco("speculaas-2", "d-sp2") + deco("noten-groep", "d-ng") + deco("noot-1", "d-n1") + deco("noot-2", "d-n2") + deco("noot-3", "d-n3") + deco("noot-5", "d-n5") + deco("snoep-hoop", "d-sh") + deco("snoep-2", "d-s2") : ""}
   <div class="wrap">
     <div class="topbar">
       ${C.logo ? `<a class="merk" href="/"><img src="${beeld(C.logo)}" alt="Sint in IJsselstein"></a>` : "<span></span>"}
       ${C.facebook ? `<a class="fb-knop" href="${link(C.facebook)}" target="_blank" rel="noopener">${fbIcon} Facebook</a>` : ""}
     </div>
     <div class="pd-kern">
-      <div class="pd-met-rij">
-        ${B.met ? `<span class="pd-met">${esc(B.met)}</span>` : ""}
-        ${B.tadaa ? `<img class="pd-tadaa" src="${beeld(B.tadaa)}" alt="Circus Tadaa">` : ""}
+      <div class="pd-titelblok">
+        ${B.tadaa ? `<div class="pd-ballon">${B.met ? `<span class="pd-met">${esc(B.met)}</span>` : ""}<img class="pd-tadaa" src="${beeld(B.tadaa)}" alt="Circus Tadaa"></div>` : ""}
+        ${kop}
       </div>
-      <h1 class="pd-titel">${esc(B.titel)}</h1>
       ${B.datum ? `<p class="pd-datum">${esc(B.datum)}</p>` : ""}
       ${B.tekst ? `<p class="pd-sub">${esc(B.tekst)}</p>` : ""}
     </div>
   </div>
-</header>`,
+</header>`;
+    },
 
     aftelklok: B => `
 <section class="klok pd-klok" aria-label="Aftelklok">
-  ${deco("snoep-1", "d-s1")}${deco("snoep-2", "d-s2")}
+  ${deco("snoep-1", "d-s1")}${deco("sint", "d-sint")}${deco("noot-6", "d-n6")}${deco("noot-3", "d-n3")}
   <div class="wrap" id="klok">
     <span class="label">${esc(B.tekst)}</span>
     <div class="letters">
@@ -62,7 +83,7 @@
       </li>`).join("");
       return `
 <section class="programma pd-programma">
-  ${deco("piet", "d-piet")}${deco("schoen", "d-schoen")}${deco("noot-4", "d-n4")}
+  ${deco("piet", "d-piet")}${deco("schoen", "d-schoen")}${deco("noot-4", "d-n4")}${deco("noten-groep", "d-ng")}${deco("speculaas", "d-spec")}${deco("noot-5", "d-n5")}
   <div class="wrap">
     <h2 class="pd-h2">${esc(B.titel)}</h2>
     ${B.tekst ? `<p class="pd-intro">${esc(B.tekst)}</p>` : ""}
@@ -304,13 +325,14 @@
     const vanaf = C.omschakelen ? new Date(C.omschakelen).getTime() : NaN;
     const pd = !!C.pietendag && (C.modus === "pietendag" || (!isNaN(vanaf) && Date.now() >= vanaf));
     document.body.classList.toggle("pd", pd);
+    if (!pd) document.querySelectorAll(".pd-regen").forEach(e => e.remove());
     document.title = pd ? "Pietendag in IJsselstein | Sint in IJsselstein" : "Sint in IJsselstein | Sinterklaasintocht IJsselstein";
     const dataVan = k => (pd && C.pietendag[k]) ? C.pietendag[k] : C[k];
     const bouw = k => (pd && blokPd[k]) ? blokPd[k] : blok[k];
     let html = volgorde.filter(k => dataVan(k) && dataVan(k).toon).map(k => bouw(k)(dataVan(k), C)).join("");
     html += `<footer><div class="wrap"><span>© ${new Date().getFullYear()} ${esc(C.footer)} <span class="uitgezonden">· Uitgezonden vanuit IJsselstein</span></span>${C.facebook ? `<a href="${link(C.facebook)}" target="_blank" rel="noopener">Facebook</a>` : ""}</div></footer>`;
     document.getElementById("site").innerHTML = html;
-    if (!pd) pepernoten();
+    if (!pd) pepernoten(); else lekkerRegen();
     carrousel();
     const klok = dataVan("aftelklok");
     if (klok?.toon) aftelklok(klok); else clearInterval(timer);
