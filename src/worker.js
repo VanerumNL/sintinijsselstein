@@ -30,13 +30,36 @@ async function wachtwoordStatus(env) {
   if (env.WACHTWOORD) return { ingesteld: true, bron: "secret" };
   return { ingesteld: !!(await env.KV.get("instelling:ww")), bron: "beheer" };
 }
-async function magBewerken(req, env) {
+class Geblokkeerd extends Error {}
+const MAX_POGINGEN = 5;
+const BLOKKADE_MS = 15 * 60 * 1000;
+
+async function wachtwoordKlopt(req, env) {
   const ww = req.headers.get("x-wachtwoord") || "";
   if (!ww) return false;
   if (env.WACHTWOORD) return gelijk(ww, env.WACHTWOORD);
   const opgeslagen = await env.KV.get("instelling:ww", "json");
   if (!opgeslagen) return false;
   return gelijk(await hash(opgeslagen.zout + ww), opgeslagen.hash);
+}
+
+/* Na 5 foute pogingen vanaf hetzelfde adres is inloggen 15 minuten geblokkeerd. */
+async function magBewerken(req, env) {
+  const ip = req.headers.get("cf-connecting-ip") || "onbekend";
+  const sleutel = "poging:" + ip;
+  const nu = Date.now();
+  const st = await env.KV.get(sleutel, "json");
+  const actief = st && st.tot > nu ? st : null;
+  if (actief && actief.n >= MAX_POGINGEN) throw new Geblokkeerd();
+  if (await wachtwoordKlopt(req, env)) {
+    if (st) await env.KV.delete(sleutel);
+    return true;
+  }
+  if (!req.headers.get("x-wachtwoord")) return false;
+  const n = (actief ? actief.n : 0) + 1;
+  await env.KV.put(sleutel, JSON.stringify({ n, tot: nu + BLOKKADE_MS }), { expirationTtl: 900 });
+  if (n >= MAX_POGINGEN) throw new Geblokkeerd();
+  return false;
 }
 
 async function leesInhoud(env, req) {
@@ -75,7 +98,7 @@ async function api(req, env, p, m) {
     if (st.bron === "secret") return fout("Het wachtwoord staat vast in Cloudflare (WACHTWOORD).", 409);
     if (st.ingesteld && !(await magBewerken(req, env))) return fout("Wachtwoord klopt niet", 401);
     const { nieuw = "" } = await req.json().catch(() => ({}));
-    if (nieuw.length < 6) return fout("Kies een wachtwoord van minstens 6 tekens");
+    if (nieuw.length < 12) return fout("Kies een wachtwoord van minstens 12 tekens (een zin werkt prima)");
     const zout = crypto.randomUUID();
     await env.KV.put("instelling:ww", JSON.stringify({ zout, hash: await hash(zout + nieuw) }));
     return json({ ok: true });
@@ -141,6 +164,7 @@ export default {
       if (p.startsWith("/media/")) return await media(env, p);
       return env.ASSETS.fetch(req);
     } catch (e) {
+      if (e instanceof Geblokkeerd) return fout("Te veel foute pogingen. Probeer het over 15 minuten opnieuw.", 429);
       return fout("Er ging iets mis: " + e.message, 500);
     }
   }

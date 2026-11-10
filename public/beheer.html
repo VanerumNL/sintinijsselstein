@@ -234,7 +234,7 @@ async function start() {
   if (!st.ingesteld) {
     nieuwWachtwoord = true;
     $("#inlogtitel").textContent = "Kies een wachtwoord";
-    $("#inloguitleg").textContent = "Dit is de eerste keer. Kies een wachtwoord van minstens 6 tekens. Geef het alleen aan mensen die de site mogen aanpassen.";
+    $("#inloguitleg").textContent = "Dit is de eerste keer. Kies een wachtwoord van minstens 12 tekens, bijvoorbeeld een zin. Geef het alleen aan mensen die de site mogen aanpassen.";
     $("#ww2vak").hidden = false; $("#ww2").required = true;
     $("#ww1").autocomplete = "new-password";
     $("#inlogknop").textContent = "Wachtwoord opslaan";
